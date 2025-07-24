@@ -1,0 +1,25 @@
+{
+  "name": "racetrack",
+  "version": "1.0.0",
+  "description": "A simple car game that is played on a sheet of paper, now on a screen !",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "android": "vite build && cap sync && cap run android",
+    "pc": "vite build && vite",
+    "dev": "vite",
+    "build": "vite build",
+    "assemble-android": "vite build && cap sync && cd android && ./gradlew assembleRelease && adb install app/build/outputs/apk/release/app-release.apk"
+  },
+  "author": "Nicolas R.",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
+    "capacitor": "^0.5.6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.2",
+    "vite": "^7.0.6"
+  }
+}

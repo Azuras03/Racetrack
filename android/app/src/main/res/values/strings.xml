@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">racetrack</string>
+    <string name="title_activity_main">racetrack</string>
+    <string name="package_name">com.nicolas.racetrack</string>
+    <string name="custom_url_scheme">com.nicolas.racetrack</string>
+</resources>
