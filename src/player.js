@@ -9,28 +9,45 @@ class Player {
         this.predictivePosition = { x: x, y: y };
         this.possibleMoves = [];
         this.moves = [{ x: x, y: y }]; // Initialize with the starting position
+        this.stun = 0; // Stun duration
     }
 
-    getMoves() {
+    getMoves(terrain) {
         this.possibleMoves = [];
         this.calculatePredictivePosition();
+
+        // TODO Faire en sorte de calculer si on a un obstacle sur la ligne entre 
+        // la position actuelle et la position prédictive
+
+        for (let dx = -1; dx <= 1; dx++) {
+            let newX = this.predictivePosition.x + dx;
+
+            if (newX < 0 || newX >= constants.NUM_TILES_X) continue;
+
+            for (let dy = -1; dy <= 1; dy++) {
+                let newY = this.predictivePosition.y + dy;
+
+                if (newX < 0 || newX >= constants.NUM_TILES_X) continue;
+
+                // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
+                // le joueur perdra toute sa vitesse
+                let isOnTerrain = terrain[constants.trackDensity * newX][constants.trackDensity * newY] === 1
+                this.possibleMoves.push({ x: newX, y: newY, stop: isOnTerrain });
+            }
+        }
+
+        // Check if the predictive position is at the edge of the grid
         let isAtEdge = this.isAtEdge(this.predictivePosition.x, this.predictivePosition.y);
         if (isAtEdge) {
             let x = Math.max(0, Math.min(constants.NUM_TILES_X - 1, this.predictivePosition.x));
             let y = Math.max(0, Math.min(constants.NUM_TILES_Y - 1, this.predictivePosition.y));
             this.possibleMoves.push({ x: x, y: y, stop: isAtEdge });
         }
-        // Ajouter les combinaisons de +1 et -1 predictiveX et Y
-        for (let dx = -1; dx <= 1; dx++) {
-            for (let dy = -1; dy <= 1; dy++) {
-                this.possibleMoves.push({ x: this.predictivePosition.x + dx, y: this.predictivePosition.y + dy, stop: isAtEdge});
-            }
-        }
     }
 
     move(x, y) {
         if (this.possibleMoves.some(move => move.x === x && move.y === y)) {
-            if (this.possibleMoves[0].stop) {
+            if (this.possibleMoves.find(move => move.x === x && move.y === y).stop) {
                 this.speedX = 0;
                 this.speedY = 0;
             } else {

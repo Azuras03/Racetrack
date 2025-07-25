@@ -8,28 +8,13 @@ let gridElements = [];
 let numberPlayers = 2;
 let player = new Player(0, 0, "red");
 
+
 createGame()
 
 function createGame() {
-    for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
-        gridElements[i] = [];
-        for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
-            gridElements[i][j] = 0; // 0 = pas de route, 1 = route
-        }
-    }
-    gridElements[0][0] = 1;
-    gridElements[0][1] = 1;
-    gridElements[0][2] = 1;
-    gridElements[0][3] = 1;
-    gridElements[0][4] = 1;
-    gridElements[0][5] = 1;
-    gridElements[1][0] = 1;
-    gridElements[1][1] = 1;
-    gridElements[1][2] = 1;
-    gridElements[1][3] = 1;
-    gridElements[1][4] = 1;
-    gridElements[1][5] = 1;
-
+    // Initialisation de la grille
+    fillGrid();
+    
     constants.touchCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
     constants.touchCanvas.height = (constants.NUM_TILES_Y - 1) * HEIGHT_TILE;
     constants.pathCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
@@ -43,6 +28,7 @@ function createGame() {
     // constants.game.style.gridTemplateColumns = `repeat(${constants.NUM_TILES_X}, ${WIDTH_TILE}px)`;
     // constants.game.style.gridTemplateRows = `repeat(${constants.NUM_TILES_Y}, ${HEIGHT_TILE}px)`;
 
+    player.getMoves(gridElements);
     renderCurrentGame();
 }
 
@@ -53,16 +39,52 @@ constants.touchCanvas.addEventListener('click', (event) => {
     const y = Math.floor((event.clientY - rect.top + HEIGHT_TILE / 2) / HEIGHT_TILE);
 
     player.move(x, y);
+    player.getMoves(gridElements);
     renderCurrentGame();
 
     console.log(`Clicked on position: (${x}, ${y})`);
 });
 
+constants.importButton.addEventListener('change', readSingleFileAndCreateTerrain);
+
+function fillGrid() {
+    for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
+        gridElements[i] = [];
+        for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
+            gridElements[i][j] = 0;
+        }
+    }
+}
+
+function readSingleFileAndCreateTerrain(event) {
+    const file = event.target.files[0];
+    if (!file) {
+        console.error("No file selected.");
+        return;
+    }
+
+    fillGrid()
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        console.log(content)
+        const lines = content.split('\n');
+        for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
+            const elements = lines[i].split(" ");
+            for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
+                gridElements[i][j] = parseInt(elements[j]);
+            }
+        }
+        renderCurrentGame();
+    };
+    reader.readAsText(file);
+    console.log("File read successfully.");
+}
+
 function renderCurrentGame() {
     constants.ctxGame.clearRect(0, 0, constants.touchCanvas.width, constants.touchCanvas.height);
     renderTerrain();
     renderCanvas();
-    player.getMoves();
 
     constants.ctxPath.clearRect(0, 0, constants.pathCanvas.width, constants.pathCanvas.height);
     renderPath();
@@ -76,8 +98,8 @@ function renderTerrain() {
     for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
         for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
             if (gridElements[i][j] === 1) {
-                constants.ctxGame.fillRect(i * WIDTH_TILE / constants.trackDensity,
-                    j * HEIGHT_TILE / constants.trackDensity,
+                constants.ctxGame.fillRect(i * WIDTH_TILE / constants.trackDensity - WIDTH_TILE / (2 * constants.trackDensity),
+                    j * HEIGHT_TILE / constants.trackDensity - HEIGHT_TILE / (2 * constants.trackDensity),
                     WIDTH_TILE / constants.trackDensity,
                     HEIGHT_TILE / constants.trackDensity);
             }
