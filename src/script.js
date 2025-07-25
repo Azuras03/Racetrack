@@ -5,16 +5,25 @@ let WIDTH_TILE = 30
 let HEIGHT_TILE = 30
 
 let gridElements = [];
-let numberPlayers = 2;
-let player = new Player(0, 0, "red");
+let numberPlayers = 4;
+let players = [];
+let turn = 0;
+let moves = [];
 
 
 createGame()
 
 function createGame() {
+    players = [];
+    for (let i = 0; i < numberPlayers; i++) {
+        const x = Math.floor(Math.random() * constants.NUM_TILES_X);
+        const y = Math.floor(Math.random() * constants.NUM_TILES_Y);
+        players.push(new Player(x, y,
+             `hsl(${Math.random() * 360}, 100%, 50%)`));
+    }
     // Initialisation de la grille
     fillGrid();
-    
+
     constants.touchCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
     constants.touchCanvas.height = (constants.NUM_TILES_Y - 1) * HEIGHT_TILE;
     constants.pathCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
@@ -22,14 +31,7 @@ function createGame() {
     constants.gameCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
     constants.gameCanvas.height = (constants.NUM_TILES_Y - 1) * HEIGHT_TILE;
 
-    // constants.game.style.width = `${constants.NUM_TILES_X * WIDTH_TILE}px`;
-    // constants.game.style.height = `${constants.NUM_TILES_Y * HEIGHT_TILE}px`;
-    // constants.game.style.display = 'grid';
-    // constants.game.style.gridTemplateColumns = `repeat(${constants.NUM_TILES_X}, ${WIDTH_TILE}px)`;
-    // constants.game.style.gridTemplateRows = `repeat(${constants.NUM_TILES_Y}, ${HEIGHT_TILE}px)`;
-
-    player.getMoves(gridElements);
-    renderCurrentGame();
+    initiateTurn();
 }
 
 constants.touchCanvas.addEventListener('click', (event) => {
@@ -38,14 +40,24 @@ constants.touchCanvas.addEventListener('click', (event) => {
     const x = Math.floor((event.clientX - rect.left + WIDTH_TILE / 2) / WIDTH_TILE);
     const y = Math.floor((event.clientY - rect.top + HEIGHT_TILE / 2) / HEIGHT_TILE);
 
-    player.move(x, y);
-    player.getMoves(gridElements);
-    renderCurrentGame();
+    if (!players[turn].canMove(x, y)) {
+        console.log(`Cannot move to (${x}, ${y})`);
+        return;
+    }
+    players[turn].move(x, y);
+    turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
+    initiateTurn();
+    console.log(`Player ${turn + 1}'s turn`);
 
     console.log(`Clicked on position: (${x}, ${y})`);
 });
 
 constants.importButton.addEventListener('change', readSingleFileAndCreateTerrain);
+
+function initiateTurn() {
+    players[turn].getMoves(gridElements);
+    renderCurrentGame();
+}
 
 function fillGrid() {
     for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
@@ -65,7 +77,7 @@ function readSingleFileAndCreateTerrain(event) {
 
     fillGrid()
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const content = e.target.result;
         console.log(content)
         const lines = content.split('\n');
@@ -87,9 +99,11 @@ function renderCurrentGame() {
     renderCanvas();
 
     constants.ctxPath.clearRect(0, 0, constants.pathCanvas.width, constants.pathCanvas.height);
-    renderPath();
-    renderPlayerMoves();
-    renderPlayer();
+    for (let player of players) {
+        renderPath(player);
+        renderPlayer(player);
+    }
+    renderPlayerMoves(players[turn]);
 }
 
 function renderTerrain() {
@@ -124,7 +138,7 @@ function renderCanvas() {
     }
 }
 
-function renderPath() {
+function renderPath(player) {
     constants.ctxPath.strokeStyle = player.color;
     constants.ctxPath.lineWidth = 3;
 
@@ -139,7 +153,7 @@ function renderPath() {
     }
 }
 
-function renderPlayerMoves() {
+function renderPlayerMoves(player) {
     constants.ctxPath.fillStyle = 'rgba(0, 255, 0, 0.5)';
     player.possibleMoves.forEach(move => {
         constants.ctxPath.beginPath();
@@ -148,7 +162,7 @@ function renderPlayerMoves() {
     });
 }
 
-function renderPlayer() {
+function renderPlayer(player) {
     constants.ctxPath.fillStyle = player.color;
     constants.ctxPath.beginPath();
     constants.ctxPath.arc(player.position.x * WIDTH_TILE, player.position.y * HEIGHT_TILE, 10, 0, Math.PI * 2);
