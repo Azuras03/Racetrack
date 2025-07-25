@@ -5,7 +5,7 @@ let WIDTH_TILE = 30
 let HEIGHT_TILE = 30
 
 let gridElements = [];
-let numberPlayers = 4;
+let numberPlayers = 2;
 let players = [];
 let turn = 0;
 let moves = [];
@@ -46,6 +46,11 @@ constants.touchCanvas.addEventListener('click', (event) => {
     }
     players[turn].move(x, y);
     turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
+    
+    while (players[turn].stun > 0) {
+        players[turn].stun--;
+        turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
+    }
     initiateTurn();
     console.log(`Player ${turn + 1}'s turn`);
 

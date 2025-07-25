@@ -54,6 +54,7 @@ class Player {
     move(x, y) {
         if (this.possibleMoves.some(move => move.x === x && move.y === y)) {
             if (this.possibleMoves.find(move => move.x === x && move.y === y).stop) {
+                this.stun = this.evaluateStunTime(Math.max(this.speedX, this.speedY));
                 this.speedX = 0;
                 this.speedY = 0;
             } else {
@@ -65,6 +66,16 @@ class Player {
             this.position.y = y;
             this.moves.push({ x: x, y: y });
         }
+    }
+
+    evaluateStunTime(speed){
+        let stunResult = 0;
+        if (speed > 0) {
+            stunResult = Math.floor(speed/2);
+        } else {
+            stunResult = 1;
+        }
+        return stunResult;
     }
 
     isAtEdge(x, y) {
