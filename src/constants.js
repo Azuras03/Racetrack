@@ -1,13 +1,17 @@
 const game = document.getElementById("game");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const canvasPath = document.getElementById("path");
-const ctxPath = canvasPath.getContext("2d");
+const touchCanvas = document.getElementById("touchCanvas");
+const ctxTouch = touchCanvas.getContext("2d");
+const pathCanvas = document.getElementById("pathCanvas");
+const ctxPath = pathCanvas.getContext("2d");
+const gameCanvas = document.getElementById("gameCanvas");
+const ctxGame = gameCanvas.getContext("2d");
 
 export {
     game,
-    canvas,
-    ctx,
-    canvasPath,
+    touchCanvas,
+    ctxTouch,
+    pathCanvas,
     ctxPath,
+    gameCanvas,
+    ctxGame
 }

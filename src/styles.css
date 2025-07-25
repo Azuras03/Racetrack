@@ -18,3 +18,24 @@ body {
     box-sizing: border-box;
     border: 1px solid #999;
 }
+
+#touchCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#pathCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
