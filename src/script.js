@@ -1,39 +1,31 @@
 import * as constants from './constants.js';
 import Player from './player.js';
 
-let NUM_TILES_X = 30
-let NUM_TILES_Y = 20
-
 let WIDTH_TILE = 30
 let HEIGHT_TILE = 30
 
-let gridGame = [];
+let gridElements = [];
 let numberPlayers = 2;
 let player = new Player(0,0, "red");
 
 createGame()
 
 function createGame(){
-    constants.touchCanvas.width = NUM_TILES_X * WIDTH_TILE;
-    constants.touchCanvas.height = NUM_TILES_Y * HEIGHT_TILE;
-    constants.pathCanvas.width = NUM_TILES_X * WIDTH_TILE;
-    constants.pathCanvas.height = NUM_TILES_Y * HEIGHT_TILE;
-    constants.gameCanvas.width = NUM_TILES_X * WIDTH_TILE;
-    constants.gameCanvas.height = NUM_TILES_Y * HEIGHT_TILE;
+    gridElements = [[0,0], [0,1]]; 
+    constants.touchCanvas.width = constants.NUM_TILES_X * WIDTH_TILE;
+    constants.touchCanvas.height = constants.NUM_TILES_Y * HEIGHT_TILE;
+    constants.pathCanvas.width = constants.NUM_TILES_X * WIDTH_TILE;
+    constants.pathCanvas.height = constants.NUM_TILES_Y * HEIGHT_TILE;
+    constants.gameCanvas.width = constants.NUM_TILES_X * WIDTH_TILE;
+    constants.gameCanvas.height = constants.NUM_TILES_Y * HEIGHT_TILE;
 
-    // constants.game.style.width = `${NUM_TILES_X * WIDTH_TILE}px`;
-    // constants.game.style.height = `${NUM_TILES_Y * HEIGHT_TILE}px`;
+    // constants.game.style.width = `${constants.NUM_TILES_X * WIDTH_TILE}px`;
+    // constants.game.style.height = `${constants.NUM_TILES_Y * HEIGHT_TILE}px`;
     // constants.game.style.display = 'grid';
-    // constants.game.style.gridTemplateColumns = `repeat(${NUM_TILES_X}, ${WIDTH_TILE}px)`;
-    // constants.game.style.gridTemplateRows = `repeat(${NUM_TILES_Y}, ${HEIGHT_TILE}px)`;
+    // constants.game.style.gridTemplateColumns = `repeat(${constants.NUM_TILES_X}, ${WIDTH_TILE}px)`;
+    // constants.game.style.gridTemplateRows = `repeat(${constants.NUM_TILES_Y}, ${HEIGHT_TILE}px)`;
 
-    // Créer un cadrillage sur le canvas
-    renderCanvas();
-
-    // Render the player
-    renderPlayer(constants.ctxTouch);
-    player.getMoves();
-    renderPlayerMoves();
+    renderCurrentGame();
 }
 
 constants.touchCanvas.addEventListener('click', (event) => {
@@ -43,6 +35,12 @@ constants.touchCanvas.addEventListener('click', (event) => {
     const y = Math.floor((event.clientY - rect.top) / HEIGHT_TILE);
     
     player.move(x, y);
+    renderCurrentGame();
+    
+    console.log(`Clicked on position: (${x}, ${y})`);
+});
+
+function renderCurrentGame() {
     renderCanvas();
     player.getMoves();
 
@@ -50,24 +48,22 @@ constants.touchCanvas.addEventListener('click', (event) => {
     renderPath();
     renderPlayerMoves();
     renderPlayer();
-    
-    console.log(`Clicked on position: (${x}, ${y})`);
-});
+}
 
 function renderCanvas() {
     constants.ctxGame.clearRect(0, 0, constants.touchCanvas.width, constants.touchCanvas.height);
     constants.ctxGame.strokeStyle = '#000000';
     constants.ctxGame.lineWidth = 1;
-    for (let i = 0; i <= NUM_TILES_X; i++) {
+    for (let i = 0; i <= constants.NUM_TILES_X; i++) {
         constants.ctxGame.beginPath();
-        constants.ctxGame.moveTo(i * WIDTH_TILE + WIDTH_TILE / 2, 0);
-        constants.ctxGame.lineTo(i * WIDTH_TILE + WIDTH_TILE / 2, constants.touchCanvas.height);
+        constants.ctxGame.moveTo(i * WIDTH_TILE, 0);
+        constants.ctxGame.lineTo(i * WIDTH_TILE, constants.touchCanvas.height);
         constants.ctxGame.stroke();
     }
-    for (let j = 0; j <= NUM_TILES_Y; j++) {
+    for (let j = 0; j <= constants.NUM_TILES_Y; j++) {
         constants.ctxGame.beginPath();
-        constants.ctxGame.moveTo(0, j * HEIGHT_TILE + HEIGHT_TILE / 2);
-        constants.ctxGame.lineTo(constants.touchCanvas.width, j * HEIGHT_TILE + HEIGHT_TILE / 2);
+        constants.ctxGame.moveTo(0, j * HEIGHT_TILE);
+        constants.ctxGame.lineTo(constants.touchCanvas.width, j * HEIGHT_TILE);
         constants.ctxGame.stroke();
     }
 }
@@ -77,12 +73,12 @@ function renderPath() {
     constants.ctxPath.lineWidth = 3;
 
     constants.ctxPath.beginPath();
-        constants.ctxPath.moveTo(player.moves[0].x * WIDTH_TILE + WIDTH_TILE / 2,
-            player.moves[0].y * HEIGHT_TILE + HEIGHT_TILE / 2);
+        constants.ctxPath.moveTo(player.moves[0].x * WIDTH_TILE,
+            player.moves[0].y * HEIGHT_TILE);
     for (let move of player.moves) {
         // Draw a line from the move position to the current player position
-        constants.ctxPath.lineTo(move.x * WIDTH_TILE + WIDTH_TILE / 2,
-            move.y * HEIGHT_TILE + HEIGHT_TILE / 2);
+        constants.ctxPath.lineTo(move.x * WIDTH_TILE,
+            move.y * HEIGHT_TILE);
         constants.ctxPath.stroke();
     }
 }
@@ -91,7 +87,7 @@ function renderPlayerMoves() {
     constants.ctxPath.fillStyle = 'rgba(0, 255, 0, 0.5)';
     player.possibleMoves.forEach(move => {
         constants.ctxPath.beginPath();
-        constants.ctxPath.arc(move.x * WIDTH_TILE + WIDTH_TILE / 2, move.y * HEIGHT_TILE + HEIGHT_TILE / 2, 10, 0, Math.PI * 2);
+        constants.ctxPath.arc(move.x * WIDTH_TILE, move.y * HEIGHT_TILE, 10, 0, Math.PI * 2);
         constants.ctxPath.fill();
     });
 }
@@ -99,6 +95,6 @@ function renderPlayerMoves() {
 function renderPlayer() {
     constants.ctxPath.fillStyle = player.color;
     constants.ctxPath.beginPath();
-    constants.ctxPath.arc(player.position.x * WIDTH_TILE + WIDTH_TILE / 2, player.position.y * HEIGHT_TILE + HEIGHT_TILE / 2, 10, 0, Math.PI * 2);
+    constants.ctxPath.arc(player.position.x * WIDTH_TILE, player.position.y * HEIGHT_TILE, 10, 0, Math.PI * 2);
     constants.ctxPath.fill();
 }
