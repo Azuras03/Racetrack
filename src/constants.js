@@ -6,7 +6,7 @@ const ctxPath = pathCanvas.getContext("2d");
 const gameCanvas = document.getElementById("gameCanvas");
 const ctxGame = gameCanvas.getContext("2d");
 const NUM_TILES_X = 30;
-const NUM_TILES_Y = 30;
+const NUM_TILES_Y = 20;
 const trackDensity = 2; // Densité, donc en gros pour une grille, on a 2*densité éléments dans une tile
 
 export {
@@ -18,5 +18,6 @@ export {
     gameCanvas,
     ctxGame,
     NUM_TILES_X,
-    NUM_TILES_Y
+    NUM_TILES_Y,
+    trackDensity
 }
