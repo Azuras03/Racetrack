@@ -10,6 +10,7 @@ const exportButton = document.getElementById("exportButton");
 const importButton = document.getElementById("importButton");
 
 const pencil = document.getElementById("pencil");
+const endPencil = document.getElementById("end");
 const eraser = document.getElementById("eraser");
 const spawner = document.getElementById("spawner");
 const clearButton = document.getElementById("clearButton");
@@ -28,5 +29,6 @@ export {
     pencil,
     eraser,
     spawner,
-    clearButton
+    clearButton,
+    endPencil,
 }
