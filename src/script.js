@@ -10,6 +10,10 @@ let moves = [];
 let WIDTH_TILE = 0
 let HEIGHT_TILE = 0
 
+let playerStrokeWidth = 0; // Largeur du trait pour le rendu des chemins
+let playerRadius = 0; // Rayon du cercle pour le rendu des joueurs
+let strokeWidth = 0; // Largeur du trait pour le rendu des chemins
+
 let WIDTH_CANVAS = 0;
 let HEIGHT_CANVAS = 0;
 
@@ -60,6 +64,10 @@ function updateResolution() {
 
     WIDTH_TILE = WIDTH_CANVAS / (constants.NUM_TILES_X-1);
     HEIGHT_TILE = HEIGHT_CANVAS / (constants.NUM_TILES_Y-1);
+
+    strokeWidth = WIDTH_TILE / 15; // Largeur du trait pour le rendu des chemins
+    playerStrokeWidth = WIDTH_TILE / 8; // Largeur du trait pour le rendu
+    playerRadius = WIDTH_TILE / 3; // Rayon du cercle pour le rendu des joueurs
     initiateTurn()
 }
 
@@ -159,7 +167,7 @@ function renderTerrain() {
 
 function renderCanvas() {
     constants.ctxGame.strokeStyle = '#000000';
-    constants.ctxGame.lineWidth = 1;
+    constants.ctxGame.lineWidth = strokeWidth;
     for (let i = 0; i <= constants.NUM_TILES_X; i++) {
         constants.ctxGame.beginPath();
         constants.ctxGame.moveTo(i * WIDTH_TILE, 0);
@@ -176,7 +184,7 @@ function renderCanvas() {
 
 function renderPath(player) {
     constants.ctxPath.strokeStyle = player.color;
-    constants.ctxPath.lineWidth = 3;
+    constants.ctxPath.lineWidth = playerStrokeWidth;
 
     constants.ctxPath.beginPath();
     constants.ctxPath.moveTo(player.moves[0].x * WIDTH_TILE,
@@ -193,7 +201,7 @@ function renderPlayerMoves(player) {
     constants.ctxPath.fillStyle = 'rgba(0, 255, 0, 0.5)';
     player.possibleMoves.forEach(move => {
         constants.ctxPath.beginPath();
-        constants.ctxPath.arc(move.x * WIDTH_TILE, move.y * HEIGHT_TILE, 10, 0, Math.PI * 2);
+        constants.ctxPath.arc(move.x * WIDTH_TILE, move.y * HEIGHT_TILE, playerRadius, 0, Math.PI * 2);
         constants.ctxPath.fill();
     });
 }
@@ -201,6 +209,6 @@ function renderPlayerMoves(player) {
 function renderPlayer(player) {
     constants.ctxPath.fillStyle = player.color;
     constants.ctxPath.beginPath();
-    constants.ctxPath.arc(player.position.x * WIDTH_TILE, player.position.y * HEIGHT_TILE, 10, 0, Math.PI * 2);
+    constants.ctxPath.arc(player.position.x * WIDTH_TILE, player.position.y * HEIGHT_TILE, playerRadius, 0, Math.PI * 2);
     constants.ctxPath.fill();
 }
