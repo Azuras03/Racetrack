@@ -34,6 +34,10 @@ class Player {
                 // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
                 // le joueur perdra toute sa vitesse
                 let isOnTerrain = terrain[utils.trackDensity * newX][utils.trackDensity * newY] === 1
+                // Ce cas signifie que la voiture vient de se crasher, donc ne peut pas aller encore sur du bitume
+                if (isOnTerrain && this.speedX == 0 && this.speedY == 0) {
+                    continue;
+                }
                 this.possibleMoves.push({ x: newX, y: newY, stop: isOnTerrain });
             }
         }
