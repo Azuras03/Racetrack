@@ -4,10 +4,10 @@ import * as canvas from './canvas.js';
 let mousedown = false;
 
 let writeType = 1; // 1 = pencil, 0 = eraser, 2 = spawner
+let pencilSize = constants.pencilSize.value; // Taille du crayon
 
-
-utils.num_tiles_x = 45;
-utils.num_tiles_y = 25;
+utils.num_tiles_x = constants.widthSelector.value;
+utils.num_tiles_y = constants.heightSelector.value;
 
 fillGrid();
 canvas.updateResolution();
@@ -59,6 +59,22 @@ constants.clearButton.addEventListener('click', () => {
     console.log("Grid cleared");
 });
 
+constants.widthSelector.addEventListener('change', (event) => {
+    const newWidth = parseInt(event.target.value);
+    utils.num_tiles_x = newWidth;
+    canvas.updateResolution();
+    fillGrid();
+    renderCurrentGame();
+});
+
+constants.heightSelector.addEventListener('change', (event) => {
+    const newHeight = parseInt(event.target.value);
+    utils.num_tiles_y = newHeight;
+    canvas.updateResolution();
+    fillGrid();
+    renderCurrentGame();
+});
+
 constants.touchCanvas.addEventListener('mousedown', (event) => {
     mousedown = true;
 });
@@ -84,13 +100,24 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
             utils.spawners.push({ x, y });
         }
     } else {
-        utils.gridElements[xDensity][yDensity] = writeType;
+        for (let i = -pencilSize/2; i < pencilSize/2; i++) {
+            for (let j = -pencilSize/2; j < pencilSize/2; j++) {
+                writeOnGrid(xDensity + i, yDensity + j, writeType);
+            }
+        }
     }
 
     renderCurrentGame();
 
     console.log(`Clicked on position: (${x}, ${y})`);
 });
+
+function writeOnGrid(x, y, writeType) {
+    if (x < 0 || x >= utils.num_tiles_x * utils.trackDensity ||
+        y < 0 || y >= utils.num_tiles_y * utils.trackDensity)
+        return;
+    utils.gridElements[x][y] = writeType;
+}
 
 function fillGrid() {
     for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
@@ -101,7 +128,10 @@ function fillGrid() {
     }
 }
 // Add event listener for window resize
-window.addEventListener('resize', utils.updateResolution);
+window.addEventListener('resize', () => {
+    canvas.updateResolution();
+    renderCurrentGame();
+})
 
 constants.exportButton.addEventListener('click', () => {
     // Données du terrain qu'on mimifie
