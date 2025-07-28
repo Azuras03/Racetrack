@@ -91,8 +91,9 @@ constants.touchCanvas.addEventListener('mouseup', (event) => {
 constants.touchCanvas.addEventListener('mousemove', (event) => {
     if (!mousedown) return;
     const rect = constants.touchCanvas.getBoundingClientRect();
-    let x = Math.floor((event.clientX - rect.left + utils.widthTile / 2) / utils.widthTile);
-    let y = Math.floor((event.clientY - rect.top + utils.heightTile / 2) / utils.heightTile);
+    
+    let x = Math.floor((event.clientX - rect.left + utils.widthTile) / utils.widthTile);
+    let y = Math.floor((event.clientY - rect.top + utils.heightTile) / utils.heightTile);
     let xDensity = Math.floor((event.clientX - rect.left + utils.widthTile / 2) / utils.widthTile * utils.trackDensity);
     let yDensity = Math.floor((event.clientY - rect.top + utils.heightTile / 2) / utils.heightTile * utils.trackDensity);
 
@@ -116,6 +117,22 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
     renderCurrentGame();
 
     console.log(`Clicked on position: (${x}, ${y})`);
+});
+
+constants.touchCanvas.addEventListener('mousemove', (event) => {
+// Show a circle at the mouse position
+    const rect = constants.pathCanvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    constants.ctxPath.clearRect(0, 0, constants.pathCanvas.width, constants.pathCanvas.height);
+    constants.ctxPath.beginPath();
+    constants.ctxPath.arc(x, y, pencilSize*utils.widthTile/4, 0, Math.PI * 2);
+    constants.ctxPath.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    constants.ctxPath.fill();
+    constants.ctxPath.stroke();
+    constants.ctxPath.closePath();
+    constants.ctxPath.fillStyle = 'black';
+    constants.ctxPath.font = '16px Arial';
 });
 
 function writeOnGrid(x, y, writeType) {
