@@ -9,11 +9,15 @@ const mainContainer = document.getElementById("main");
 const exportButton = document.getElementById("exportButton");
 const importButton = document.getElementById("importButton");
 
+const pencilSize = document.getElementById("pencilSize");
 const pencil = document.getElementById("pencil");
 const endPencil = document.getElementById("end");
 const eraser = document.getElementById("eraser");
 const spawner = document.getElementById("spawner");
 const clearButton = document.getElementById("clearButton");
+
+const widthSelector = document.getElementById("widthSelector");
+const heightSelector = document.getElementById("heightSelector");
 
 export {
     game,
@@ -26,9 +30,12 @@ export {
     exportButton,
     importButton,
     mainContainer,
+    pencilSize,
     pencil,
     eraser,
     spawner,
     clearButton,
     endPencil,
+    widthSelector,
+    heightSelector,
 }
