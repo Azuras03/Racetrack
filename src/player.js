@@ -1,4 +1,5 @@
 import * as constants from './constants.js';
+import { utils } from './utils.js';
 
 class Player {
     constructor(x, y, color) {
@@ -22,18 +23,16 @@ class Player {
         for (let dx = -1; dx <= 1; dx++) {
             let newX = this.predictivePosition.x + dx;
 
-            if (newX < 0 || newX >= constants.NUM_TILES_X) continue;
+            if (newX < 0 || newX >= utils.num_tiles_x) continue;
 
             for (let dy = -1; dy <= 1; dy++) {
                 let newY = this.predictivePosition.y + dy;
 
-                if (newX < 0 || newX >= constants.NUM_TILES_X) continue;
+                if (newX < 0 || newX >= utils.num_tiles_x) continue;
 
                 // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
                 // le joueur perdra toute sa vitesse
-                // console.log(constants.trackDensity * newX, constants.trackDensity * newY);
-                // console.log(terrain)
-                let isOnTerrain = terrain[constants.trackDensity * newX][constants.trackDensity * newY] === 1
+                let isOnTerrain = terrain[utils.trackDensity * newX][utils.trackDensity * newY] === 1
                 this.possibleMoves.push({ x: newX, y: newY, stop: isOnTerrain });
             }
         }
@@ -41,8 +40,8 @@ class Player {
         // Check if the predictive position is at the edge of the grid
         let isAtEdge = this.isAtEdge(this.predictivePosition.x, this.predictivePosition.y);
         if (isAtEdge) {
-            let x = Math.max(0, Math.min(constants.NUM_TILES_X - 1, this.predictivePosition.x));
-            let y = Math.max(0, Math.min(constants.NUM_TILES_Y - 1, this.predictivePosition.y));
+            let x = Math.max(0, Math.min(utils.num_tiles_x - 1, this.predictivePosition.x));
+            let y = Math.max(0, Math.min(utils.num_tiles_y - 1, this.predictivePosition.y));
             this.possibleMoves.push({ x: x, y: y, stop: isAtEdge });
         }
     }
@@ -79,8 +78,8 @@ class Player {
     }
 
     isAtEdge(x, y) {
-        return (x < 0 || x >= constants.NUM_TILES_X ||
-            y < 0 || y >= constants.NUM_TILES_Y)
+        return (x < 0 || x >= utils.num_tiles_x ||
+            y < 0 || y >= utils.num_tiles_y)
     }
 
     calculatePredictivePosition() {

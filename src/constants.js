@@ -8,9 +8,11 @@ const ctxGame = gameCanvas.getContext("2d");
 const mainContainer = document.getElementById("main");
 const exportButton = document.getElementById("exportButton");
 const importButton = document.getElementById("importButton");
-const NUM_TILES_X = 30;
-const NUM_TILES_Y = 20;
-const trackDensity = 2; // Densité, donc en gros pour une grille, on a densité^2 éléments dans une tile
+
+const pencil = document.getElementById("pencil");
+const eraser = document.getElementById("eraser");
+const spawner = document.getElementById("spawner");
+const clearButton = document.getElementById("clearButton");
 
 export {
     game,
@@ -20,10 +22,11 @@ export {
     ctxPath,
     gameCanvas,
     ctxGame,
-    NUM_TILES_X,
-    NUM_TILES_Y,
-    trackDensity,
     exportButton,
     importButton,
-    mainContainer
+    mainContainer,
+    pencil,
+    eraser,
+    spawner,
+    clearButton
 }
