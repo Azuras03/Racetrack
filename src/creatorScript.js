@@ -4,7 +4,7 @@ import * as canvas from './canvas.js';
 let mousedown = false;
 
 let writeType = 1; // 1 = pencil, 0 = eraser, 2 = spawner
-let pencilSize = constants.pencilSize.value; // Taille du crayon
+let pencilSize = constants.pencilSizeSelector.value; // Taille du crayon
 
 utils.num_tiles_x = constants.widthSelector.value;
 utils.num_tiles_y = constants.heightSelector.value;
@@ -75,6 +75,10 @@ constants.heightSelector.addEventListener('change', (event) => {
     renderCurrentGame();
 });
 
+constants.pencilSizeSelector.addEventListener('change', (event) => {
+    pencilSize = parseInt(event.target.value);
+})
+
 constants.touchCanvas.addEventListener('mousedown', (event) => {
     mousedown = true;
 });
@@ -102,7 +106,9 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
     } else {
         for (let i = -pencilSize/2; i < pencilSize/2; i++) {
             for (let j = -pencilSize/2; j < pencilSize/2; j++) {
-                writeOnGrid(xDensity + i, yDensity + j, writeType);
+                const writeX = Math.floor(xDensity + i);
+                const writeY = Math.floor(yDensity + j);
+                writeOnGrid(writeX, writeY, writeType);
             }
         }
     }

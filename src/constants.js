@@ -9,7 +9,7 @@ const mainContainer = document.getElementById("main");
 const exportButton = document.getElementById("exportButton");
 const importButton = document.getElementById("importButton");
 
-const pencilSize = document.getElementById("pencilSize");
+const pencilSizeSelector = document.getElementById("pencilSize");
 const pencil = document.getElementById("pencil");
 const endPencil = document.getElementById("end");
 const eraser = document.getElementById("eraser");
@@ -30,7 +30,7 @@ export {
     exportButton,
     importButton,
     mainContainer,
-    pencilSize,
+    pencilSizeSelector,
     pencil,
     eraser,
     spawner,
