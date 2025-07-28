@@ -1,13 +1,21 @@
 import * as constants from './constants.js';
 import Player from './player.js';
 
-let WIDTH_TILE = 30
-let HEIGHT_TILE = 30
 let mousedown = false;
 
 let gridElements = [];
+let WIDTH_TILE = 0
+let HEIGHT_TILE = 0
+
+let strokeWidth = 0; // Largeur du trait pour le rendu des chemins
+
+let WIDTH_CANVAS = 0;
+let HEIGHT_CANVAS = 0;
+
+const aspect = constants.NUM_TILES_X / constants.NUM_TILES_Y; // Par exemple 16/9 ou 4/3
 
 createGame()
+updateResolution();
 
 function createGame() {
     // Initialisation de la grille
@@ -17,15 +25,6 @@ function createGame() {
             gridElements[i][j] = 0; // 0 = pas de route, 1 = route
         }
     }
-
-    constants.touchCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
-    constants.touchCanvas.height = (constants.NUM_TILES_Y - 1) * HEIGHT_TILE;
-    constants.pathCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
-    constants.pathCanvas.height = (constants.NUM_TILES_Y - 1) * HEIGHT_TILE;
-    constants.gameCanvas.width = (constants.NUM_TILES_X - 1) * WIDTH_TILE;
-    constants.gameCanvas.height = (constants.NUM_TILES_Y - 1) * HEIGHT_TILE;
-
-    renderCurrentGame();
 }
 
 constants.touchCanvas.addEventListener('mousedown', (event) => {
@@ -54,6 +53,39 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
 
     console.log(`Clicked on position: (${x}, ${y})`);
 });
+
+function updateResolution() {
+
+    // Faire un rendu en fonction de l'aspect ratio, pour que le canvas soit le plus grand tout en prenant la place possible sans stretch
+    const curentAspect = document.documentElement.clientWidth / document.documentElement.clientHeight;
+
+    if (curentAspect > aspect) {
+        constants.touchCanvas.width = document.documentElement.clientHeight * aspect;
+        constants.touchCanvas.height = document.documentElement.clientHeight;
+        constants.gameCanvas.width = document.documentElement.clientHeight * aspect;
+        constants.gameCanvas.height = document.documentElement.clientHeight;
+        constants.pathCanvas.width = document.documentElement.clientHeight * aspect;
+        constants.pathCanvas.height = document.documentElement.clientHeight;
+    } else {
+        constants.touchCanvas.width = document.documentElement.clientWidth;
+        constants.touchCanvas.height = document.documentElement.clientWidth / aspect;
+        constants.gameCanvas.width = document.documentElement.clientWidth;
+        constants.gameCanvas.height = document.documentElement.clientWidth / aspect;
+        constants.pathCanvas.width = document.documentElement.clientWidth;
+        constants.pathCanvas.height = document.documentElement.clientWidth / aspect;
+    }
+    WIDTH_CANVAS = constants.touchCanvas.width;
+    HEIGHT_CANVAS = constants.touchCanvas.height;
+
+    WIDTH_TILE = WIDTH_CANVAS / (constants.NUM_TILES_X-1);
+    HEIGHT_TILE = HEIGHT_CANVAS / (constants.NUM_TILES_Y-1);
+
+    strokeWidth = WIDTH_TILE / 15; // Largeur du trait pour le rendu des chemins
+    renderCurrentGame();
+}
+
+// Add event listener for window resize
+window.addEventListener('resize', updateResolution);
 
 constants.exportButton.addEventListener('click', () => {
     // Données du terrain qu'on mimifie
@@ -93,7 +125,7 @@ function renderCurrentGame() {
 }
 
 function renderTerrain() {
-    constants.ctxGame.clearRect(0, 0, constants.gameCanvas.width, constants.gameCanvas.height);
+    // constants.ctxGame.clearRect(0, 0, constants.touchCanvas.width, constants.touchCanvas.height);
     constants.ctxGame.fillStyle = '#000000';
     for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
         for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
@@ -106,7 +138,6 @@ function renderTerrain() {
         }
     }
 }
-
 function renderCanvas() {
     constants.ctxGame.strokeStyle = '#000000';
     constants.ctxGame.lineWidth = 1;

@@ -65,7 +65,7 @@ function updateResolution() {
     strokeWidth = WIDTH_TILE / 15; // Largeur du trait pour le rendu des chemins
     playerStrokeWidth = WIDTH_TILE / 8; // Largeur du trait pour le rendu
     playerRadius = WIDTH_TILE / 3; // Rayon du cercle pour le rendu des joueurs
-    initiateTurn()
+    renderCurrentGame()
 }
 
 constants.touchCanvas.addEventListener('click', (event) => {
