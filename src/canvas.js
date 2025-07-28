@@ -1,0 +1,119 @@
+import { utils } from './utils.js';
+import * as constants from './constants.js';
+
+
+export function updateResolution() {
+
+    utils.aspect = utils.num_tiles_x / utils.num_tiles_y;
+
+    // Faire un rendu en fonction de l'aspect ratio, pour que le canvas soit le plus grand tout en prenant la place possible sans stretch
+    const curentAspect = document.documentElement.clientWidth / document.documentElement.clientHeight;
+
+    if (curentAspect > utils.aspect) {
+        constants.touchCanvas.width = document.documentElement.clientHeight * utils.aspect;
+        constants.touchCanvas.height = document.documentElement.clientHeight;
+        constants.gameCanvas.width = document.documentElement.clientHeight * utils.aspect;
+        constants.gameCanvas.height = document.documentElement.clientHeight;
+        constants.pathCanvas.width = document.documentElement.clientHeight * utils.aspect;
+        constants.pathCanvas.height = document.documentElement.clientHeight;
+    } else {
+        constants.touchCanvas.width = document.documentElement.clientWidth;
+        constants.touchCanvas.height = document.documentElement.clientWidth / utils.aspect;
+        constants.gameCanvas.width = document.documentElement.clientWidth;
+        constants.gameCanvas.height = document.documentElement.clientWidth / utils.aspect;
+        constants.pathCanvas.width = document.documentElement.clientWidth;
+        constants.pathCanvas.height = document.documentElement.clientWidth / utils.aspect;
+    }
+    utils.widthCanvas = constants.touchCanvas.width;
+    utils.heightCanvas = constants.touchCanvas.height;
+
+    utils.widthTile = utils.widthCanvas / (utils.num_tiles_x - 1);
+    utils.heightTile = utils.heightCanvas / (utils.num_tiles_y - 1);
+
+    let minValue = Math.min(utils.widthTile, utils.heightTile);
+
+    utils.strokeWidth = minValue / 15; // Largeur du trait pour le rendu des chemins
+    utils.playerStrokeWidth = minValue / 8; // Largeur du trait pour le rendu
+    utils.playerRadius = minValue / 3; // Rayon du cercle pour le rendu des joueurs
+}
+
+export function renderTerrain(ctx) {
+    ctx.fillStyle = '#000000';
+    for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
+        for (let j = 0; j < utils.num_tiles_y * utils.trackDensity; j++) {
+            if (utils.gridElements[i][j] === 0) {
+                continue;
+            }
+            if (utils.gridElements[i][j] === 1) {
+                ctx.fillStyle = '#000000'; // Couleur pour le terrain
+            }
+            if (utils.gridElements[i][j] === 2) {
+                ctx.fillStyle = '#FF0000'; // Couleur pour le terrain d'arrivée
+            }
+            ctx.fillRect(i * utils.widthTile / utils.trackDensity - utils.widthTile / (2 * utils.trackDensity),
+                j * utils.heightTile / utils.trackDensity - utils.heightTile / (2 * utils.trackDensity),
+                utils.widthTile / utils.trackDensity,
+                utils.heightTile / utils.trackDensity);
+        }
+    }
+}
+
+export function renderCanvas(ctx) {
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = utils.strokeWidth;
+    for (let i = 0; i <= utils.num_tiles_x; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * utils.widthTile, 0);
+        ctx.lineTo(i * utils.widthTile, constants.touchCanvas.height);
+        ctx.stroke();
+    }
+    for (let j = 0; j <= utils.num_tiles_y; j++) {
+        ctx.beginPath();
+        ctx.moveTo(0, j * utils.heightTile);
+        ctx.lineTo(constants.touchCanvas.width, j * utils.heightTile);
+        ctx.stroke();
+    }
+}
+
+export function renderPath(player, ctx) {
+    ctx.strokeStyle = player.color;
+    ctx.lineWidth = utils.playerStrokeWidth;
+
+    ctx.beginPath();
+    ctx.moveTo(player.moves[0].x * utils.widthTile,
+        player.moves[0].y * utils.heightTile);
+    for (let move of player.moves) {
+        // Draw a line from the move position to the current player position
+        ctx.lineTo(move.x * utils.widthTile,
+            move.y * utils.heightTile);
+        ctx.stroke();
+    }
+}
+
+export function renderSpawners(ctx) {
+    ctx.fillStyle = '#FF0000'; // Couleur pour le spawner
+    for (const spawner of utils.spawners) {
+        ctx.beginPath();
+        ctx.arc(spawner.x * utils.widthTile, spawner.y * utils.heightTile,
+            Math.min(utils.widthTile, utils.heightTile) / 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+    }
+    ctx.fillStyle = '#000000'; // Revenir à la couleur de base
+}
+
+export function renderPlayerMoves(player, ctx) {
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+    player.possibleMoves.forEach(move => {
+        ctx.beginPath();
+        ctx.arc(move.x * utils.widthTile, move.y * utils.heightTile, utils.playerRadius, 0, Math.PI * 2);
+        ctx.fill();
+    });
+}
+
+export function renderPlayer(player, ctx) {
+    ctx.fillStyle = player.color;
+    ctx.beginPath();
+    ctx.arc(player.position.x * utils.widthTile, player.position.y * utils.heightTile, utils.playerRadius, 0, Math.PI * 2);
+    ctx.fill();
+}
