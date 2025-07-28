@@ -10,13 +10,15 @@ let moves = [];
 let WIDTH_TILE = 0
 let HEIGHT_TILE = 0
 
+let WIDTH_CANVAS = 0;
+let HEIGHT_CANVAS = 0;
+
 
 
 const aspect = constants.NUM_TILES_X / constants.NUM_TILES_Y; // Par exemple 16/9 ou 4/3
 
 createGame()
 updateResolution()
-initiateTurn();
 
 function createGame() {
     players = [];
@@ -28,26 +30,37 @@ function createGame() {
     }
     // Initialisation de la grille
     fillGrid();
-
 }
 
 // Add event listener for window resize
 window.addEventListener('resize', updateResolution);
 
 function updateResolution() {
-    WIDTH_TILE = document.documentElement.clientWidth / constants.NUM_TILES_X
-    HEIGHT_TILE = document.documentElement.clientHeight / constants.NUM_TILES_Y
-
-    constants.touchCanvas.width = WIDTH_TILE * (constants.NUM_TILES_X - 1)
-    constants.touchCanvas.height = HEIGHT_TILE * (constants.NUM_TILES_Y - 1)
-    constants.gameCanvas.width = WIDTH_TILE * (constants.NUM_TILES_X - 1)
-    constants.gameCanvas.height = HEIGHT_TILE * (constants.NUM_TILES_Y - 1)
-    constants.pathCanvas.width = WIDTH_TILE * (constants.NUM_TILES_X - 1)
-    constants.pathCanvas.height = HEIGHT_TILE * (constants.NUM_TILES_Y - 1)
 
     // Faire un rendu en fonction de l'aspect ratio, pour que le canvas soit le plus grand tout en prenant la place possible sans stretch
     const curentAspect = document.documentElement.clientWidth / document.documentElement.clientHeight;
-    renderCurrentGame()
+
+    if (curentAspect > aspect) {
+        constants.touchCanvas.width = document.documentElement.clientHeight * aspect;
+        constants.touchCanvas.height = document.documentElement.clientHeight;
+        constants.gameCanvas.width = document.documentElement.clientHeight * aspect;
+        constants.gameCanvas.height = document.documentElement.clientHeight;
+        constants.pathCanvas.width = document.documentElement.clientHeight * aspect;
+        constants.pathCanvas.height = document.documentElement.clientHeight;
+    } else {
+        constants.touchCanvas.width = document.documentElement.clientWidth;
+        constants.touchCanvas.height = document.documentElement.clientWidth / aspect;
+        constants.gameCanvas.width = document.documentElement.clientWidth;
+        constants.gameCanvas.height = document.documentElement.clientWidth / aspect;
+        constants.pathCanvas.width = document.documentElement.clientWidth;
+        constants.pathCanvas.height = document.documentElement.clientWidth / aspect;
+    }
+    WIDTH_CANVAS = constants.touchCanvas.width;
+    HEIGHT_CANVAS = constants.touchCanvas.height;
+
+    WIDTH_TILE = WIDTH_CANVAS / (constants.NUM_TILES_X-1);
+    HEIGHT_TILE = HEIGHT_CANVAS / (constants.NUM_TILES_Y-1);
+    initiateTurn()
 }
 
 constants.touchCanvas.addEventListener('click', (event) => {

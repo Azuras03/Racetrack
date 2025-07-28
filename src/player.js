@@ -31,8 +31,8 @@ class Player {
 
                 // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
                 // le joueur perdra toute sa vitesse
-                console.log(constants.trackDensity * newX, constants.trackDensity * newY);
-                console.log(terrain)
+                // console.log(constants.trackDensity * newX, constants.trackDensity * newY);
+                // console.log(terrain)
                 let isOnTerrain = terrain[constants.trackDensity * newX][constants.trackDensity * newY] === 1
                 this.possibleMoves.push({ x: newX, y: newY, stop: isOnTerrain });
             }
