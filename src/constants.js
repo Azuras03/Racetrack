@@ -5,6 +5,7 @@ const pathCanvas = document.getElementById("pathCanvas");
 const ctxPath = pathCanvas.getContext("2d");
 const gameCanvas = document.getElementById("gameCanvas");
 const ctxGame = gameCanvas.getContext("2d");
+const mainContainer = document.getElementById("main");
 const exportButton = document.getElementById("exportButton");
 const importButton = document.getElementById("importButton");
 const NUM_TILES_X = 30;
@@ -23,5 +24,6 @@ export {
     NUM_TILES_Y,
     trackDensity,
     exportButton,
-    importButton
+    importButton,
+    mainContainer
 }
