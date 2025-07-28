@@ -91,6 +91,8 @@ function readSingleFileAndCreateTerrain(event) {
         const content = e.target.result;
         console.log(content)
         loadTerrain(content);
+        canvas.updateResolution();
+        initializePlayers();
         renderCurrentGame();
     };
     reader.readAsText(file);
@@ -105,7 +107,6 @@ async function readAssetFileAndCreateTerrain(filePath) {
         .then(content => {
             loadTerrain(content);
             initializePlayers()
-            renderCurrentGame();
         })
 }
 
