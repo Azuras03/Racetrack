@@ -29,6 +29,7 @@ class Player {
                 let newY = this.predictivePosition.y + dy;
 
                 if (newX < 0 || newX >= utils.num_tiles_x) continue;
+                if (newY == this.position.y && newX == this.position.x) continue; // Ne pas inclure la position actuelle
 
                 // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
                 // le joueur perdra toute sa vitesse
