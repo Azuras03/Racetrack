@@ -136,7 +136,9 @@ function loadTerrain(content) {
     }
 
     // Add the spawners
-    const spawnersData = sections[2].trim().split(', ');
+    utils.spawners = [];
+    const spawnersData = sections[2].trim().split(',');
+    console.log(spawnersData);
     for (let data of spawnersData) {
         const [x, y] = data.split(' ').map(Number);
         if (x >= 0 && x < utils.num_tiles_x && y >= 0 && y < utils.num_tiles_y) {
