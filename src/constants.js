@@ -18,6 +18,7 @@ const clearButton = document.getElementById("clearButton");
 
 const widthSelector = document.getElementById("widthSelector");
 const heightSelector = document.getElementById("heightSelector");
+const densitySelector = document.getElementById("densitySelector");
 
 export {
     game,
@@ -38,4 +39,5 @@ export {
     endPencil,
     widthSelector,
     heightSelector,
+    densitySelector,
 }

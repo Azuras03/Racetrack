@@ -75,6 +75,12 @@ constants.heightSelector.addEventListener('change', (event) => {
     renderCurrentGame();
 });
 
+constants.densitySelector.addEventListener('change', (event) => {
+    utils.trackDensity = parseInt(event.target.value);
+    fillGrid()
+    renderCurrentGame()
+})
+
 constants.pencilSizeSelector.addEventListener('change', (event) => {
     pencilSize = parseInt(event.target.value);
 })
@@ -126,7 +132,7 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
     const y = event.clientY - rect.top;
     constants.ctxPath.clearRect(0, 0, constants.pathCanvas.width, constants.pathCanvas.height);
     constants.ctxPath.beginPath();
-    constants.ctxPath.arc(x, y, pencilSize*utils.widthTile/4, 0, Math.PI * 2);
+    constants.ctxPath.arc(x, y, pencilSize*utils.widthTile/utils.trackDensity/2, 0, Math.PI * 2);
     constants.ctxPath.fillStyle = 'rgba(0, 0, 0, 0.5)';
     constants.ctxPath.fill();
     constants.ctxPath.stroke();

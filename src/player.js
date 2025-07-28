@@ -70,7 +70,7 @@ class Player {
 
     evaluateStunTime(speed){
         let stunResult = 0;
-        if (speed > 0) {
+        if (speed > 3) {
             stunResult = Math.floor(speed/2);
         } else {
             stunResult = 1;
