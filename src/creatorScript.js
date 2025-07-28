@@ -97,9 +97,9 @@ constants.touchCanvas.addEventListener('mouseup', (event) => {
 constants.touchCanvas.addEventListener('mousemove', (event) => {
     if (!mousedown) return;
     const rect = constants.touchCanvas.getBoundingClientRect();
-    
-    let x = Math.floor((event.clientX - rect.left + utils.widthTile) / utils.widthTile);
-    let y = Math.floor((event.clientY - rect.top + utils.heightTile) / utils.heightTile);
+
+    let x = Math.floor((event.clientX - rect.left + utils.widthTile/2) / utils.widthTile);
+    let y = Math.floor((event.clientY - rect.top + utils.heightTile/2) / utils.heightTile);
     let xDensity = Math.floor((event.clientX - rect.left + utils.widthTile / 2) / utils.widthTile * utils.trackDensity);
     let yDensity = Math.floor((event.clientY - rect.top + utils.heightTile / 2) / utils.heightTile * utils.trackDensity);
 
@@ -111,11 +111,16 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
             utils.spawners.push({ x, y });
         }
     } else {
-        for (let i = -pencilSize/2; i < pencilSize/2; i++) {
-            for (let j = -pencilSize/2; j < pencilSize/2; j++) {
+        for (let i = -pencilSize / 2; i < pencilSize / 2; i++) {
+            for (let j = -pencilSize / 2; j < pencilSize / 2; j++) {
                 const writeX = Math.floor(xDensity + i);
                 const writeY = Math.floor(yDensity + j);
                 writeOnGrid(writeX, writeY, writeType);
+            }
+        }
+        if (writeType === 0) { // Eraser mode, mais pour les spawners
+            if (utils.spawners.some(spawner => spawner.x === x && spawner.y === y)) {
+                utils.spawners = utils.spawners.filter(spawner => !(spawner.x === x && spawner.y === y));
             }
         }
     }
@@ -126,13 +131,13 @@ constants.touchCanvas.addEventListener('mousemove', (event) => {
 });
 
 constants.touchCanvas.addEventListener('mousemove', (event) => {
-// Show a circle at the mouse position
+    // Show a circle at the mouse position
     const rect = constants.pathCanvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     constants.ctxPath.clearRect(0, 0, constants.pathCanvas.width, constants.pathCanvas.height);
     constants.ctxPath.beginPath();
-    constants.ctxPath.arc(x, y, pencilSize*utils.widthTile/utils.trackDensity/2, 0, Math.PI * 2);
+    constants.ctxPath.arc(x, y, pencilSize * utils.widthTile / utils.trackDensity / 2, 0, Math.PI * 2);
     constants.ctxPath.fillStyle = 'rgba(0, 0, 0, 0.5)';
     constants.ctxPath.fill();
     constants.ctxPath.stroke();

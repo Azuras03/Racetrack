@@ -3,7 +3,7 @@ import { utils } from './utils.js';
 import Player from './player.js';
 import * as canvas from './canvas.js';
 
-let numberPlayers = 2;
+let numberPlayers = 1;
 let players = [];
 let turn = 0;
 let moves = [];
