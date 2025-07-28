@@ -21,6 +21,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         creator: resolve(__dirname, 'creator.html'),
+        game: resolve(__dirname, 'game.html'),
       },
       output: {
         manualChunks: undefined,

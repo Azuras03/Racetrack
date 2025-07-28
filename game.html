@@ -6,18 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
     <link rel="icon" type="image/x-icon" href="assets/icon.ico">
 
+    <script defer type="module" src="./src/script.js"></script>
     <link rel="stylesheet" href="./src/styles.css">
     <title>Racetrack</title>
 </head>
 
 <body>
 
+    <div id="game">
+        <canvas id="touchCanvas"></canvas>
+        <canvas id="pathCanvas"></canvas>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
     <div id="header">
-        Racetrack!
+        <a href="./index.html">Home</a>
+        <input type="file" id="importButton" accept=".txt">
     </div>
-    
-    <div id="main">
-        <a href="./creator.html">Creator</a>
-        <a href="./game.html">Game</a>
-    </div>
+
 </body>
