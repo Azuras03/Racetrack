@@ -15,6 +15,7 @@ renderCurrentGame();
 
 constants.pencil.addEventListener('click', () => {
     constants.pencil.classList.add('active');
+    constants.endPencil.classList.remove('active');
     constants.eraser.classList.remove('active');
     constants.clearButton.classList.remove('active');
     constants.spawner.classList.remove('active');
@@ -23,6 +24,7 @@ constants.pencil.addEventListener('click', () => {
 
 constants.eraser.addEventListener('click', () => {
     constants.pencil.classList.remove('active');
+    constants.endPencil.classList.remove('active');
     constants.eraser.classList.add('active');
     constants.clearButton.classList.remove('active');
     constants.spawner.classList.remove('active');
@@ -42,6 +44,7 @@ constants.endPencil.addEventListener('click', () => {
 
 constants.spawner.addEventListener('click', () => {
     constants.pencil.classList.remove('active');
+    constants.endPencil.classList.remove('active');
     constants.eraser.classList.remove('active');
     constants.clearButton.classList.remove('active');
     constants.spawner.classList.add('active');
@@ -102,7 +105,7 @@ window.addEventListener('resize', utils.updateResolution);
 
 constants.exportButton.addEventListener('click', () => {
     // Données du terrain qu'on mimifie
-    let data = "";
+    let data = `${utils.num_tiles_x} ${utils.num_tiles_y} ${utils.trackDensity}\n<<\n`;
     data = formatTerrainData(data);
     // Créer un blob avec les données
     const blob = new Blob([data], { type: 'text/plain' });
@@ -119,6 +122,7 @@ constants.exportButton.addEventListener('click', () => {
 });
 
 function formatTerrainData(data) {
+    // Terrain part
     for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
         for (let j = 0; j < utils.num_tiles_y * utils.trackDensity; j++) {
             data += utils.gridElements[i][j];
@@ -127,6 +131,18 @@ function formatTerrainData(data) {
             }
         }
         data += "\n";
+    }
+
+    // Spawners part
+    data += "<<\n"
+    for (let i = 0; i < utils.spawners.length; i++) {
+        const spawner = utils.spawners[i];
+        if (i == utils.spawners.length - 1) {
+            data += `${spawner.x} ${spawner.y}`;
+        }
+        else {
+            data += `${spawner.x} ${spawner.y},`;
+        }
     }
     return data;
 }
