@@ -1,7 +1,6 @@
 import * as constants from './constants.js';
 import Player from './player.js';
 
-
 let gridElements = [];
 let numberPlayers = 2;
 let players = [];
@@ -16,8 +15,6 @@ let strokeWidth = 0; // Largeur du trait pour le rendu des chemins
 
 let WIDTH_CANVAS = 0;
 let HEIGHT_CANVAS = 0;
-
-
 
 const aspect = constants.NUM_TILES_X / constants.NUM_TILES_Y; // Par exemple 16/9 ou 4/3
 

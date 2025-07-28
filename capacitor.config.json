@@ -6,6 +6,7 @@
   "server": {
     "androidScheme": "https"
   },
+  "zoomEnabled": true,
   "android": {
     "webView": {
       "enableZoom" : true
