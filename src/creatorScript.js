@@ -140,7 +140,7 @@ function renderTerrain() {
 }
 function renderCanvas() {
     constants.ctxGame.strokeStyle = '#000000';
-    constants.ctxGame.lineWidth = 1;
+    constants.ctxGame.lineWidth = strokeWidth;
     for (let i = 0; i <= constants.NUM_TILES_X; i++) {
         constants.ctxGame.beginPath();
         constants.ctxGame.moveTo(i * WIDTH_TILE, 0);
