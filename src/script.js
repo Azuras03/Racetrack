@@ -1,7 +1,9 @@
 import * as constants from './constants.js';
+import { utils } from './utils.js';
 import Player from './player.js';
 
 let gridElements = [];
+let spawners = [];
 let numberPlayers = 2;
 let players = [];
 let turn = 0;
@@ -16,21 +18,21 @@ let strokeWidth = 0; // Largeur du trait pour le rendu des chemins
 let WIDTH_CANVAS = 0;
 let HEIGHT_CANVAS = 0;
 
-const aspect = constants.NUM_TILES_X / constants.NUM_TILES_Y; // Par exemple 16/9 ou 4/3
+const aspect = utils.num_tiles_x / utils.num_tiles_y; // Par exemple 16/9 ou 4/3
 
-createGame()
-updateResolution()
+readAssetFileAndCreateTerrain('assets/trackTemplate.txt').then(() => {
+    updateResolution();
+})
 
-function createGame() {
+function initializePlayers() {
     players = [];
     for (let i = 0; i < numberPlayers; i++) {
-        const x = Math.floor(Math.random() * constants.NUM_TILES_X);
-        const y = Math.floor(Math.random() * constants.NUM_TILES_Y);
+        const x = spawners[i % spawners.length].x;
+        const y = spawners[i % spawners.length].y;
         players.push(new Player(x, y,
             `hsl(${Math.random() * 360}, 100%, 50%)`));
     }
-    // Initialisation de la grille
-    fillGrid();
+    getAllPlayersMoves()
 }
 
 // Add event listener for window resize
@@ -59,13 +61,13 @@ function updateResolution() {
     WIDTH_CANVAS = constants.touchCanvas.width;
     HEIGHT_CANVAS = constants.touchCanvas.height;
 
-    WIDTH_TILE = WIDTH_CANVAS / (constants.NUM_TILES_X-1);
-    HEIGHT_TILE = HEIGHT_CANVAS / (constants.NUM_TILES_Y-1);
+    WIDTH_TILE = WIDTH_CANVAS / (utils.num_tiles_x - 1);
+    HEIGHT_TILE = HEIGHT_CANVAS / (utils.num_tiles_y - 1);
 
     strokeWidth = WIDTH_TILE / 15; // Largeur du trait pour le rendu des chemins
     playerStrokeWidth = WIDTH_TILE / 8; // Largeur du trait pour le rendu
     playerRadius = WIDTH_TILE / 3; // Rayon du cercle pour le rendu des joueurs
-    initiateTurn()
+    renderCurrentGame()
 }
 
 constants.touchCanvas.addEventListener('click', (event) => {
@@ -96,14 +98,20 @@ constants.touchCanvas.addEventListener('click', (event) => {
 constants.importButton.addEventListener('change', readSingleFileAndCreateTerrain);
 
 function initiateTurn() {
-    players[turn].getMoves(gridElements);
+    getAllPlayersMoves();
     renderCurrentGame();
 }
 
+function getAllPlayersMoves() {
+    for (let player of players) {
+        player.getMoves(gridElements);
+    }
+}
+
 function fillGrid() {
-    for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
+    for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
         gridElements[i] = [];
-        for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
+        for (let j = 0; j < utils.num_tiles_y * utils.trackDensity; j++) {
             gridElements[i][j] = 0;
         }
     }
@@ -121,91 +129,152 @@ function readSingleFileAndCreateTerrain(event) {
     reader.onload = function (e) {
         const content = e.target.result;
         console.log(content)
-        const lines = content.split('\n');
-        for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
-            const elements = lines[i].split(" ");
-            for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
-                gridElements[i][j] = parseInt(elements[j]);
-            }
-        }
+        loadTerrain(content);
         renderCurrentGame();
     };
     reader.readAsText(file);
     console.log("File read successfully.");
 }
 
+async function readAssetFileAndCreateTerrain(filePath) {
+    await fetch(filePath)
+        .then(response => {
+            return response.text();
+        })
+        .then(content => {
+            loadTerrain(content);
+            initializePlayers()
+            renderCurrentGame();
+        })
+}
+
+function loadTerrain(content) {
+    const sections = content.split('<<');
+    if (sections.length < 2) {
+        console.error("Invalid file format. No terrain data found.");
+        return;
+    }
+    const firstLine = sections[0].trim().split(' ');
+    if (firstLine.length < 3) {
+        console.error("Invalid file format. Expected at least 3 values in the first line.");
+        return;
+    }
+    utils.num_tiles_x = parseInt(firstLine[0]);
+    utils.num_tiles_y = parseInt(firstLine[1]);
+    utils.trackDensity = parseInt(firstLine[2]);
+
+    fillGrid();
+
+    const lines = sections[1].trim().split('\n');
+    for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
+        const elements = lines[i].split(" ");
+        for (let j = 0; j < utils.num_tiles_y * utils.trackDensity; j++) {
+            gridElements[i][j] = parseInt(elements[j]);
+        }
+    }
+
+    // Add the spawners
+    const spawnersData = sections[2].trim().split(', ');
+    for (let data of spawnersData) {
+        const [x, y] = data.split(' ').map(Number);
+        if (x >= 0 && x < utils.num_tiles_x && y >= 0 && y < utils.num_tiles_y) {
+            spawners.push({ x, y });
+        }
+    }
+    console.log("Terrain loaded successfully.");
+}
+
 function renderCurrentGame() {
     constants.ctxGame.clearRect(0, 0, constants.touchCanvas.width, constants.touchCanvas.height);
-    renderTerrain();
-    renderCanvas();
+    renderTerrain(constants.ctxGame);
+    renderSpawners(constants.ctxGame);
+    renderCanvas(constants.ctxGame);
 
     constants.ctxPath.clearRect(0, 0, constants.touchCanvas.width, constants.touchCanvas.height);
     for (let player of players) {
-        renderPath(player);
-        renderPlayer(player);
+        renderPath(player, constants.ctxPath);
+        renderPlayer(player, constants.ctxPath);
     }
-    renderPlayerMoves(players[turn]);
+    renderPlayerMoves(players[turn], constants.ctxPath);
 }
 
-function renderTerrain() {
-    // constants.ctxGame.clearRect(0, 0, constants.touchCanvas.width, constants.touchCanvas.height);
-    constants.ctxGame.fillStyle = '#000000';
-    for (let i = 0; i < constants.NUM_TILES_X * constants.trackDensity; i++) {
-        for (let j = 0; j < constants.NUM_TILES_Y * constants.trackDensity; j++) {
-            if (gridElements[i][j] === 1) {
-                constants.ctxGame.fillRect(i * WIDTH_TILE / constants.trackDensity - WIDTH_TILE / (2 * constants.trackDensity),
-                    j * HEIGHT_TILE / constants.trackDensity - HEIGHT_TILE / (2 * constants.trackDensity),
-                    WIDTH_TILE / constants.trackDensity,
-                    HEIGHT_TILE / constants.trackDensity);
+function renderTerrain(ctx) {
+    ctx.fillStyle = '#000000';
+    for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
+        for (let j = 0; j < utils.num_tiles_y * utils.trackDensity; j++) {
+            if (gridElements[i][j] === 0) {
+                continue;
             }
+            if (gridElements[i][j] === 1) {
+                ctx.fillStyle = '#000000'; // Couleur pour le terrain
+            }
+            if (gridElements[i][j] === 2) {
+                ctx.fillStyle = '#FF0000'; // Couleur pour le terrain d'arrivée
+            }
+            ctx.fillRect(i * WIDTH_TILE / utils.trackDensity - WIDTH_TILE / (2 * utils.trackDensity),
+                j * HEIGHT_TILE / utils.trackDensity - HEIGHT_TILE / (2 * utils.trackDensity),
+                WIDTH_TILE / utils.trackDensity,
+                HEIGHT_TILE / utils.trackDensity);
         }
     }
 }
 
-function renderCanvas() {
-    constants.ctxGame.strokeStyle = '#000000';
-    constants.ctxGame.lineWidth = strokeWidth;
-    for (let i = 0; i <= constants.NUM_TILES_X; i++) {
-        constants.ctxGame.beginPath();
-        constants.ctxGame.moveTo(i * WIDTH_TILE, 0);
-        constants.ctxGame.lineTo(i * WIDTH_TILE, constants.touchCanvas.height);
-        constants.ctxGame.stroke();
+function renderCanvas(ctx) {
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = strokeWidth;
+    for (let i = 0; i <= utils.num_tiles_x; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * WIDTH_TILE, 0);
+        ctx.lineTo(i * WIDTH_TILE, constants.touchCanvas.height);
+        ctx.stroke();
     }
-    for (let j = 0; j <= constants.NUM_TILES_Y; j++) {
-        constants.ctxGame.beginPath();
-        constants.ctxGame.moveTo(0, j * HEIGHT_TILE);
-        constants.ctxGame.lineTo(constants.touchCanvas.width, j * HEIGHT_TILE);
-        constants.ctxGame.stroke();
+    for (let j = 0; j <= utils.num_tiles_y; j++) {
+        ctx.beginPath();
+        ctx.moveTo(0, j * HEIGHT_TILE);
+        ctx.lineTo(constants.touchCanvas.width, j * HEIGHT_TILE);
+        ctx.stroke();
     }
 }
 
-function renderPath(player) {
-    constants.ctxPath.strokeStyle = player.color;
-    constants.ctxPath.lineWidth = playerStrokeWidth;
+function renderPath(player, ctx) {
+    ctx.strokeStyle = player.color;
+    ctx.lineWidth = playerStrokeWidth;
 
-    constants.ctxPath.beginPath();
-    constants.ctxPath.moveTo(player.moves[0].x * WIDTH_TILE,
+    ctx.beginPath();
+    ctx.moveTo(player.moves[0].x * WIDTH_TILE,
         player.moves[0].y * HEIGHT_TILE);
     for (let move of player.moves) {
         // Draw a line from the move position to the current player position
-        constants.ctxPath.lineTo(move.x * WIDTH_TILE,
+        ctx.lineTo(move.x * WIDTH_TILE,
             move.y * HEIGHT_TILE);
-        constants.ctxPath.stroke();
+        ctx.stroke();
     }
 }
 
-function renderPlayerMoves(player) {
-    constants.ctxPath.fillStyle = 'rgba(0, 255, 0, 0.5)';
+function renderSpawners(ctx) {
+    ctx.fillStyle = '#FF0000'; // Couleur pour le spawner
+    for (const spawner of spawners) {
+        ctx.beginPath();
+        ctx.arc(spawner.x * WIDTH_TILE, spawner.y * HEIGHT_TILE,
+            Math.min(WIDTH_TILE, HEIGHT_TILE) / 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+    }
+    ctx.fillStyle = '#000000'; // Revenir à la couleur de base
+}
+
+function renderPlayerMoves(player, ctx) {
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
     player.possibleMoves.forEach(move => {
-        constants.ctxPath.beginPath();
-        constants.ctxPath.arc(move.x * WIDTH_TILE, move.y * HEIGHT_TILE, playerRadius, 0, Math.PI * 2);
-        constants.ctxPath.fill();
+        ctx.beginPath();
+        ctx.arc(move.x * WIDTH_TILE, move.y * HEIGHT_TILE, playerRadius, 0, Math.PI * 2);
+        ctx.fill();
     });
 }
 
-function renderPlayer(player) {
-    constants.ctxPath.fillStyle = player.color;
-    constants.ctxPath.beginPath();
-    constants.ctxPath.arc(player.position.x * WIDTH_TILE, player.position.y * HEIGHT_TILE, playerRadius, 0, Math.PI * 2);
-    constants.ctxPath.fill();
+function renderPlayer(player, ctx) {
+    ctx.fillStyle = player.color;
+    ctx.beginPath();
+    ctx.arc(player.position.x * WIDTH_TILE, player.position.y * HEIGHT_TILE, playerRadius, 0, Math.PI * 2);
+    ctx.fill();
 }
