@@ -7,7 +7,7 @@ let numberPlayers = 1;
 let players = [];
 let turn = 0;
 
-readAssetFileAndCreateTerrain('assets/trackTemplate.txt').then(() => {
+readAssetFileAndCreateTerrain('assets/trackTemplate2.txt').then(() => {
     canvas.updateResolution();
     renderCurrentGame();
 })
