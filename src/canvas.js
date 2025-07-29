@@ -112,6 +112,10 @@ export function renderPlayerMoves(player, ctx) {
         ctx.beginPath();
         ctx.arc(move.x * utils.widthTile, move.y * utils.heightTile, utils.playerRadius, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = ctx.fillStyle; // Utiliser la même couleur pour le contour
+        ctx.lineWidth = utils.playerStrokeWidth;
+        ctx.stroke();
+        ctx.closePath();
     });
 }
 
