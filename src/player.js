@@ -23,12 +23,13 @@ class Player {
         for (let dx = -1; dx <= 1; dx++) {
             let newX = this.predictivePosition.x + dx;
 
-            if (newX < 0 || newX >= utils.num_tiles_x) continue;
+            if (newX < 0 || newX >= utils.num_tiles_x) continue; // Vérification de la validité de newX
 
             for (let dy = -1; dy <= 1; dy++) {
                 let newY = this.predictivePosition.y + dy;
 
-                if (newX < 0 || newX >= utils.num_tiles_x) continue;
+                if (newX < 0 || newX >= utils.num_tiles_x) continue; // Vérification de la validité de newX
+
                 if (newY == this.position.y && newX == this.position.x) continue; // Ne pas inclure la position actuelle
 
                 // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
@@ -49,6 +50,61 @@ class Player {
             let y = Math.max(0, Math.min(utils.num_tiles_y - 1, this.predictivePosition.y));
             this.possibleMoves.push({ x: x, y: y, stop: isAtEdge });
         }
+
+        let finalMoves = [];
+        // Modifier tous ses mouvements en faisant du raycasting pour vérifier si on peut aller à cette position
+        for(let move of this.possibleMoves) {
+            let isGoodMove = true;
+            let lengthFor = (Math.abs(move.x - this.position.x) + Math.abs(move.y - this.position.y)) * utils.trackDensity;
+            lengthFor = Math.floor(lengthFor);
+            // Raycasting logic to check if the path is clear
+            for (let i = 0; i < lengthFor; i++) {
+                let x = this.position.x + (move.x - this.position.x) * i / lengthFor;
+                let y = this.position.y + (move.y - this.position.y) * i / lengthFor;
+                x = Math.floor(x * utils.trackDensity);
+                y = Math.floor(y * utils.trackDensity);
+
+                if (terrain[x][y] === 1) {
+                    finalMoves.push({x: Math.floor(x/utils.trackDensity), y: Math.floor(y/utils.trackDensity), stop: true});
+                    isGoodMove = false;
+                    break;
+                } 
+            }
+            if (isGoodMove) {
+                finalMoves.push({x: move.x, y: move.y, stop: move.stop});
+            }
+        }
+        
+        let finalFinalMoves = [];
+        // Enlever les doublons
+        for (let move of finalMoves) {
+            if (!finalFinalMoves.some(m => m.x === move.x && m.y === move.y)) {
+                finalFinalMoves.push(move);
+            } else if (!move.stop) {
+                // Si on a un stop, on le garde
+                finalFinalMoves.find(m => m.x === move.x && m.y === move.y).stop = move.stop;
+            }
+        }
+
+        this.possibleMoves = finalFinalMoves;
+    }
+
+    isStunned(){
+        if (this.stun > 1) {
+            this.stun--;
+            return true;
+        }
+        if (this.stun === 1) {
+            // On fait un retour en arrière
+            this.stun = 0; 
+            this.moves.push(this.moves[this.moves.length -2]); // On prend l'avant-dernière position qu'on met dans le tableau à nouveau
+            this.position.x = this.moves[this.moves.length -1].x;
+            this.position.y = this.moves[this.moves.length -1].y;
+            this.speedX = 0; // Reset speed
+            this.speedY = 0; // Reset speed
+            return true;    
+        }
+        return false;
     }
 
     canMove(x, y) {
@@ -56,9 +112,11 @@ class Player {
     }
 
     move(x, y) {
-        if (this.possibleMoves.some(move => move.x === x && move.y === y)) {
-            if (this.possibleMoves.find(move => move.x === x && move.y === y).stop) {
+        let move = this.possibleMoves.find(move => move.x === x && move.y === y)
+        if (move) {
+            if (move.stop) {
                 this.stun = this.evaluateStunTime(Math.max(this.speedX, this.speedY));
+                console.log(this.stun);
                 this.speedX = 0;
                 this.speedY = 0;
             } else {
@@ -69,6 +127,9 @@ class Player {
             this.position.x = x;
             this.position.y = y;
             this.moves.push({ x: x, y: y });
+            return true;
+        } else {
+            return false;
         }
     }
 
