@@ -103,8 +103,12 @@ export function renderSpawners(ctx) {
 }
 
 export function renderPlayerMoves(player, ctx) {
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
     player.possibleMoves.forEach(move => {
+        if (move.stop) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)'; // Couleur pour les mouvements qui s'arrêtent
+        } else {
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.5)'; // Couleur pour les mouvements possibles
+        }
         ctx.beginPath();
         ctx.arc(move.x * utils.widthTile, move.y * utils.heightTile, utils.playerRadius, 0, Math.PI * 2);
         ctx.fill();
