@@ -104,10 +104,14 @@ export function renderSpawners(ctx) {
 
 export function renderPlayerMoves(player, ctx) {
     player.possibleMoves.forEach(move => {
-        if (move.stop) {
+        if (move.stop === 1) {
             ctx.fillStyle = 'rgba(255, 0, 0, 0.5)'; // Couleur pour les mouvements qui s'arrêtent
-        } else {
+        } else if (move.stop === 0) {
             ctx.fillStyle = 'rgba(0, 255, 0, 0.5)'; // Couleur pour les mouvements possibles
+        } else if (move.stop === 2) {
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.5)'; // Couleur pour la ligne d'arrivée
+        } else {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; // Couleur par défaut
         }
         ctx.beginPath();
         ctx.arc(move.x * utils.widthTile, move.y * utils.heightTile, utils.playerRadius, 0, Math.PI * 2);
