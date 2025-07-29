@@ -6,7 +6,6 @@ import * as canvas from './canvas.js';
 let numberPlayers = 1;
 let players = [];
 let turn = 0;
-let moves = [];
 
 readAssetFileAndCreateTerrain('assets/trackTemplate.txt').then(() => {
     canvas.updateResolution();
@@ -39,21 +38,16 @@ constants.touchCanvas.addEventListener('click', (event) => {
     let y = (event.clientY - rect.top + utils.heightTile / 2) / utils.heightTile;
     y = Math.floor(y * constants.touchCanvas.clientHeight / constants.touchCanvas.offsetHeight);
 
-    if (!players[turn].canMove(x, y)) {
-        console.log(`Cannot move to (${x}, ${y})`);
+    if (!players[turn].move(x, y)) {
         return;
     }
-    players[turn].move(x, y);
     turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
 
-    while (players[turn].stun > 0) {
-        players[turn].stun--;
+    while (players[turn].isStunned()) {
         turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
     }
     initiateTurn();
-    console.log(`Player ${turn + 1}'s turn`);
-
-    console.log(`Clicked on position: (${x}, ${y})`);
+    // console.log(`Clicked on position: (${x}, ${y})`);
 });
 
 constants.importButton.addEventListener('change', readSingleFileAndCreateTerrain);
@@ -89,14 +83,13 @@ function readSingleFileAndCreateTerrain(event) {
     const reader = new FileReader();
     reader.onload = function (e) {
         const content = e.target.result;
-        console.log(content)
+        // console.log(content)
         loadTerrain(content);
         canvas.updateResolution();
         initializePlayers();
         renderCurrentGame();
     };
     reader.readAsText(file);
-    console.log("File read successfully.");
 }
 
 async function readAssetFileAndCreateTerrain(filePath) {
@@ -138,14 +131,12 @@ function loadTerrain(content) {
     // Add the spawners
     utils.spawners = [];
     const spawnersData = sections[2].trim().split(',');
-    console.log(spawnersData);
     for (let data of spawnersData) {
         const [x, y] = data.split(' ').map(Number);
         if (x >= 0 && x < utils.num_tiles_x && y >= 0 && y < utils.num_tiles_y) {
             utils.spawners.push({ x, y });
         }
     }
-    console.log("Terrain loaded successfully.");
 }
 
 function renderCurrentGame() {
