@@ -15,6 +15,7 @@ class Player {
     }
 
     getMoves(terrain) {
+        if (this.hasWin) return; // Si on a gagné, pas besoin de chercher de moves
         this.possibleMoves = [];
         this.calculatePredictivePosition();
 
@@ -59,12 +60,18 @@ class Player {
                 x = Math.floor(x * utils.trackDensity);
                 y = Math.floor(y * utils.trackDensity);
 
+                if (terrain[move.x*utils.trackDensity][move.y*utils.trackDensity] === 2){
+                    isGoodMove = true;
+                    break;
+                }
+
                 if (terrain[x][y] === 1 || terrain[x][y] === 2) {
                     finalMoves.push({
                         x: Math.floor(x / utils.trackDensity),
                         y: Math.floor(y / utils.trackDensity),
                         stop: terrain[x][y]
                     });
+                    console.log(terrain[x][y])
                     isGoodMove = false;
                     break;
                 }
@@ -79,12 +86,22 @@ class Player {
         for (let move of finalMoves) {
             if (!finalFinalMoves.some(m => m.x === move.x && m.y === move.y)) {
                 finalFinalMoves.push(move);
-            } else if (!move.stop) {
+            } else if (move.stop == 0) {
                 // Si on a un stop, on le garde
                 finalFinalMoves.find(m => m.x === move.x && m.y === move.y).stop = move.stop;
             }
         }
         this.possibleMoves = finalFinalMoves;
+    }
+
+    canPlay(){
+        if (this.isStunned()) {
+            return false;
+        }
+        if (this.hasWin){
+            return false;
+        }   
+        return true;
     }
 
     isStunned() {

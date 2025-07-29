@@ -31,6 +31,7 @@ window.addEventListener('resize', () => {
 
 
 constants.touchCanvas.addEventListener('click', (event) => {
+    if (hasEveryoneFinished()) return;
     // Déterminer quelle intersection entre deux lignes a été cliquée. Genre le cadrillage, là où deux lignes se croisent.
     const rect = constants.touchCanvas.getBoundingClientRect();
     let x = (event.clientX - rect.left + utils.widthTile / 2) / utils.widthTile;
@@ -43,12 +44,19 @@ constants.touchCanvas.addEventListener('click', (event) => {
     }
     turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
 
-    while (players[turn].isStunned()) {
+    while (!players[turn].canPlay() && !hasEveryoneFinished()) {
         turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
     }
     initiateTurn();
     // console.log(`Clicked on position: (${x}, ${y})`);
 });
+
+function hasEveryoneFinished(){
+    for(let player of players){
+        if (!player.hasWin) return false;
+    }
+    return true;
+}
 
 constants.importButton.addEventListener('change', readSingleFileAndCreateTerrain);
 
