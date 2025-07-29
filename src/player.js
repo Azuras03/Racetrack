@@ -11,6 +11,7 @@ class Player {
         this.possibleMoves = [];
         this.moves = [{ x: x, y: y }]; // Initialize with the starting position
         this.stun = 0; // Stun duration
+        this.hasWin = false; // Flag to check if the player has won
     }
 
     getMoves(terrain) {
@@ -34,12 +35,9 @@ class Player {
 
                 // Check de si la position prédictive touche un bout de terrain. Si c'est le cas,
                 // le joueur perdra toute sa vitesse
-                let isOnTerrain = terrain[utils.trackDensity * newX][utils.trackDensity * newY] === 1
+                let terrainTouch = terrain[utils.trackDensity * newX][utils.trackDensity * newY];
                 // Ce cas signifie que la voiture vient de se crasher, donc ne peut pas aller encore sur du bitume
-                if (isOnTerrain && this.speedX == 0 && this.speedY == 0) {
-                    continue;
-                }
-                this.possibleMoves.push({ x: newX, y: newY, stop: isOnTerrain });
+                this.possibleMoves.push({ x: newX, y: newY, stop: terrainTouch });
             }
         }
 
@@ -48,12 +46,12 @@ class Player {
         if (isAtEdge) {
             let x = Math.max(0, Math.min(utils.num_tiles_x - 1, this.predictivePosition.x));
             let y = Math.max(0, Math.min(utils.num_tiles_y - 1, this.predictivePosition.y));
-            this.possibleMoves.push({ x: x, y: y, stop: isAtEdge });
+            this.possibleMoves.push({ x: x, y: y, stop: 1 });
         }
 
         let finalMoves = [];
         // Modifier tous ses mouvements en faisant du raycasting pour vérifier si on peut aller à cette position
-        for(let move of this.possibleMoves) {
+        for (let move of this.possibleMoves) {
             let isGoodMove = true;
             let lengthFor = (Math.abs(move.x - this.position.x) + Math.abs(move.y - this.position.y)) * utils.trackDensity;
             lengthFor = Math.floor(lengthFor);
@@ -64,17 +62,21 @@ class Player {
                 x = Math.floor(x * utils.trackDensity);
                 y = Math.floor(y * utils.trackDensity);
 
-                if (terrain[x][y] === 1) {
-                    finalMoves.push({x: Math.floor(x/utils.trackDensity), y: Math.floor(y/utils.trackDensity), stop: true});
+                if (terrain[x][y] === 1 || terrain[x][y] === 2) {
+                    finalMoves.push({
+                        x: Math.floor(x / utils.trackDensity),
+                        y: Math.floor(y / utils.trackDensity),
+                        stop: terrain[x][y]
+                    });
                     isGoodMove = false;
                     break;
-                } 
+                }
             }
             if (isGoodMove) {
-                finalMoves.push({x: move.x, y: move.y, stop: move.stop});
+                finalMoves.push(move);
             }
         }
-        
+
         let finalFinalMoves = [];
         // Enlever les doublons
         for (let move of finalMoves) {
@@ -85,24 +87,23 @@ class Player {
                 finalFinalMoves.find(m => m.x === move.x && m.y === move.y).stop = move.stop;
             }
         }
-
         this.possibleMoves = finalFinalMoves;
     }
 
-    isStunned(){
+    isStunned() {
         if (this.stun > 1) {
             this.stun--;
             return true;
         }
         if (this.stun === 1) {
             // On fait un retour en arrière
-            this.stun = 0; 
-            this.moves.push(this.moves[this.moves.length -2]); // On prend l'avant-dernière position qu'on met dans le tableau à nouveau
-            this.position.x = this.moves[this.moves.length -1].x;
-            this.position.y = this.moves[this.moves.length -1].y;
+            this.stun = 0;
+            this.moves.push(this.moves[this.moves.length - 2]); // On prend l'avant-dernière position qu'on met dans le tableau à nouveau
+            this.position.x = this.moves[this.moves.length - 1].x;
+            this.position.y = this.moves[this.moves.length - 1].y;
             this.speedX = 0; // Reset speed
             this.speedY = 0; // Reset speed
-            return true;    
+            return true;
         }
         return false;
     }
@@ -114,11 +115,14 @@ class Player {
     move(x, y) {
         let move = this.possibleMoves.find(move => move.x === x && move.y === y)
         if (move) {
-            if (move.stop) {
+            if (move.stop == 1) {
                 this.stun = this.evaluateStunTime(Math.max(this.speedX, this.speedY));
                 console.log(this.stun);
                 this.speedX = 0;
                 this.speedY = 0;
+            } else if (move.stop == 2) {
+                this.hasWin = true; // Le joueur a atteint la ligne d'arrivée
+                console.log("GANIE")
             } else {
                 this.speedX = x - this.position.x;
                 this.speedY = y - this.position.y;
@@ -133,10 +137,10 @@ class Player {
         }
     }
 
-    evaluateStunTime(speed){
+    evaluateStunTime(speed) {
         let stunResult = 0;
         if (speed > 3) {
-            stunResult = Math.floor(speed/2);
+            stunResult = Math.floor(speed / 2);
         } else {
             stunResult = 1;
         }
