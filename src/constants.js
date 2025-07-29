@@ -9,6 +9,8 @@ const mainContainer = document.getElementById("main");
 const exportButton = document.getElementById("exportButton");
 const importButton = document.getElementById("importButton");
 
+const hideButton = document.getElementById("hideButton");
+
 const pencilSizeSelector = document.getElementById("pencilSize");
 const pencil = document.getElementById("pencil");
 const endPencil = document.getElementById("end");
