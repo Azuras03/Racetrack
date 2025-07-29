@@ -18,9 +18,6 @@ class Player {
         this.possibleMoves = [];
         this.calculatePredictivePosition();
 
-        // TODO Faire en sorte de calculer si on a un obstacle sur la ligne entre 
-        // la position actuelle et la position prédictive
-
         for (let dx = -1; dx <= 1; dx++) {
             let newX = this.predictivePosition.x + dx;
 
