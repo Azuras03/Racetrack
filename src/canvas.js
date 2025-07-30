@@ -10,19 +10,19 @@ export function updateResolution() {
     const curentAspect = document.documentElement.clientWidth / document.documentElement.clientHeight;
 
     if (curentAspect > utils.aspect) {
-        constants.touchCanvas.width = document.documentElement.clientHeight * utils.aspect;
-        constants.touchCanvas.height = document.documentElement.clientHeight;
-        constants.gameCanvas.width = document.documentElement.clientHeight * utils.aspect;
-        constants.gameCanvas.height = document.documentElement.clientHeight;
-        constants.pathCanvas.width = document.documentElement.clientHeight * utils.aspect;
-        constants.pathCanvas.height = document.documentElement.clientHeight;
+        constants.touchCanvas.width = document.documentElement.clientHeight * utils.aspect * utils.zoom;
+        constants.touchCanvas.height = document.documentElement.clientHeight * utils.zoom;
+        constants.gameCanvas.width = document.documentElement.clientHeight * utils.aspect * utils.zoom;
+        constants.gameCanvas.height = document.documentElement.clientHeight * utils.zoom;
+        constants.pathCanvas.width = document.documentElement.clientHeight * utils.aspect * utils.zoom;
+        constants.pathCanvas.height = document.documentElement.clientHeight * utils.zoom;
     } else {
-        constants.touchCanvas.width = document.documentElement.clientWidth;
-        constants.touchCanvas.height = document.documentElement.clientWidth / utils.aspect;
-        constants.gameCanvas.width = document.documentElement.clientWidth;
-        constants.gameCanvas.height = document.documentElement.clientWidth / utils.aspect;
-        constants.pathCanvas.width = document.documentElement.clientWidth;
-        constants.pathCanvas.height = document.documentElement.clientWidth / utils.aspect;
+        constants.touchCanvas.width = document.documentElement.clientWidth * utils.zoom;
+        constants.touchCanvas.height = document.documentElement.clientWidth / utils.aspect * utils.zoom;
+        constants.gameCanvas.width = document.documentElement.clientWidth * utils.zoom;
+        constants.gameCanvas.height = document.documentElement.clientWidth / utils.aspect * utils.zoom;
+        constants.pathCanvas.width = document.documentElement.clientWidth * utils.zoom;
+        constants.pathCanvas.height = document.documentElement.clientWidth / utils.aspect * utils.zoom;
     }
     utils.widthCanvas = constants.touchCanvas.width;
     utils.heightCanvas = constants.touchCanvas.height;
@@ -32,9 +32,9 @@ export function updateResolution() {
 
     let minValue = Math.min(utils.widthTile, utils.heightTile);
 
-    utils.strokeWidth = minValue / 15; // Largeur du trait pour le rendu des chemins
-    utils.playerStrokeWidth = minValue / 8; // Largeur du trait pour le rendu
-    utils.playerRadius = minValue / 3; // Rayon du cercle pour le rendu des joueurs
+    utils.strokeWidth = minValue / 15 * utils.zoom; // Largeur du trait pour le rendu des chemins
+    utils.playerStrokeWidth = minValue / 8 * utils.zoom; // Largeur du trait pour le rendu
+    utils.playerRadius = minValue / 3 * utils.zoom; // Rayon du cercle pour le rendu des joueurs
 }
 
 export function renderTerrain(ctx) {
