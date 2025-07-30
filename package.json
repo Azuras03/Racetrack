@@ -9,7 +9,8 @@
     "pc": "vite build && vite",
     "dev": "vite",
     "build": "vite build",
-    "assemble-android": "vite build && cap sync && cd android && ./gradlew assembleRelease && adb install app/build/outputs/apk/release/app-release.apk"
+    "assemble-android": "vite build && cap sync && cd android && ./gradlew assembleRelease && adb install app/build/outputs/apk/release/app-release.apk",
+    "export-assemble-android": "vite build && cap sync && cd android && ./gradlew assembleRelease && cp app/build/outputs/apk/release/app-release.apk ../../assets/app-releases/app-release.apk"
   },
   "author": "Nicolas R.",
   "license": "ISC",
