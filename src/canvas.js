@@ -30,11 +30,11 @@ export function updateResolution() {
     utils.widthTile = utils.widthCanvas / (utils.num_tiles_x - 1);
     utils.heightTile = utils.heightCanvas / (utils.num_tiles_y - 1);
 
-    let minValue = Math.min(utils.widthTile, utils.heightTile);
+    let referValue = Math.min(utils.widthTile, utils.heightTile);
 
-    utils.strokeWidth = minValue / 15 * utils.zoom; // Largeur du trait pour le rendu des chemins
-    utils.playerStrokeWidth = minValue / 8 * utils.zoom; // Largeur du trait pour le rendu
-    utils.playerRadius = minValue / 3 * utils.zoom; // Rayon du cercle pour le rendu des joueurs
+    utils.strokeWidth = referValue / 15 * utils.zoom; // Largeur du trait pour le rendu des chemins
+    utils.playerStrokeWidth = referValue / 10 * utils.zoom; // Largeur du trait pour le rendu
+    utils.playerRadius = referValue / 3 * utils.zoom; // Rayon du cercle pour le rendu des joueurs
 }
 
 export function renderTerrain(ctx) {

@@ -6,7 +6,7 @@ let trackDensity = 2; // Densité, donc en gros pour une grille, on a densité^2
 let gridElements = [];
 let players = [];
 let spawners = [];
-let zoom = .9;
+let zoom = .95;
 
 let widthCanvas = 0;
 let heightCanvas = 0;
