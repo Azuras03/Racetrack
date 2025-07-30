@@ -60,10 +60,10 @@ class Player {
                 x = Math.floor(x * utils.trackDensity);
                 y = Math.floor(y * utils.trackDensity);
 
-                if (terrain[move.x*utils.trackDensity][move.y*utils.trackDensity] === 2){
-                    isGoodMove = true;
-                    break;
-                }
+                // if (terrain[move.x*utils.trackDensity][move.y*utils.trackDensity] === 2){
+                //     isGoodMove = true;
+                //     break;
+                // }
 
                 if (terrain[x][y] === 1 || terrain[x][y] === 2) {
                     finalMoves.push({
@@ -86,7 +86,7 @@ class Player {
         for (let move of finalMoves) {
             if (!finalFinalMoves.some(m => m.x === move.x && m.y === move.y)) {
                 finalFinalMoves.push(move);
-            } else if (move.stop == 0) {
+            } else if (move.stop == 0 || move.stop == 2) {
                 // Si on a un stop, on le garde
                 finalFinalMoves.find(m => m.x === move.x && m.y === move.y).stop = move.stop;
             }
