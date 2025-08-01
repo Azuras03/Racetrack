@@ -124,14 +124,6 @@ body {
     z-index: 1;
 }
 
-#title{
-    height: 25vh;
-    font-weight: 900;
-    color: white;
-    text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.8);
-    text-align: center;
-}
-
 a{
     text-decoration: none;
     color: black;
