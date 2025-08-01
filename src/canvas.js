@@ -1,6 +1,10 @@
 import { utils } from './utils.js';
 import * as constants from './constants.js';
 
+let spawnerColor = 'rgb(255, 145, 0)'; // Couleur pour les spawners
+let terrainColor = 'rgb(0, 36, 41)'; // Couleur pour le terrain
+let finishColor = 'rgb(95, 146, 255)'; // Couleur pour le terrain d'arrivée
+let gridColor = 'rgba(0, 0, 0, 0.5)'; // Couleur de la grille
 
 export function updateResolution() {
 
@@ -32,23 +36,23 @@ export function updateResolution() {
 
     let referValue = Math.min(utils.widthTile, utils.heightTile);
 
-    utils.strokeWidth = referValue / 15 * utils.zoom; // Largeur du trait pour le rendu des chemins
-    utils.playerStrokeWidth = referValue / 10 * utils.zoom; // Largeur du trait pour le rendu
-    utils.playerRadius = referValue / 3 * utils.zoom; // Rayon du cercle pour le rendu des joueurs
+    utils.strokeWidth = referValue / 15; // Largeur du trait pour le rendu des chemins
+    utils.playerStrokeWidth = referValue / 10; // Largeur du trait pour le rendu
+    utils.playerRadius = referValue / 3; // Rayon du cercle pour le rendu des joueurs
 }
 
 export function renderTerrain(ctx) {
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = terrainColor; // Couleur pour le terrain
     for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
         for (let j = 0; j < utils.num_tiles_y * utils.trackDensity; j++) {
             if (utils.gridElements[i][j] === 0) {
                 continue;
             }
             if (utils.gridElements[i][j] === 1) {
-                ctx.fillStyle = '#000000'; // Couleur pour le terrain
+                ctx.fillStyle = terrainColor; // Couleur pour le terrain
             }
             if (utils.gridElements[i][j] === 2) {
-                ctx.fillStyle = '#FF0000'; // Couleur pour le terrain d'arrivée
+                ctx.fillStyle = finishColor; // Couleur pour le terrain d'arrivée
             }
             ctx.fillRect(i * utils.widthTile / utils.trackDensity - utils.widthTile / (2 * utils.trackDensity),
                 j * utils.heightTile / utils.trackDensity - utils.heightTile / (2 * utils.trackDensity),
@@ -59,7 +63,7 @@ export function renderTerrain(ctx) {
 }
 
 export function renderCanvas(ctx) {
-    ctx.strokeStyle = '#000000';
+    ctx.strokeStyle = gridColor; // Couleur de la grille
     ctx.lineWidth = utils.strokeWidth;
     for (let i = 0; i <= utils.num_tiles_x; i++) {
         ctx.beginPath();
@@ -87,11 +91,25 @@ export function renderPath(player, ctx) {
         ctx.lineTo(move.x * utils.widthTile,
             move.y * utils.heightTile);
         ctx.stroke();
+        if (move.stop === 1) { // Dessin d'une croix pour les mouvements qui s'arrêtent
+            ctx.beginPath();
+            ctx.moveTo(move.x * utils.widthTile - utils.playerRadius / 2,
+                move.y * utils.heightTile - utils.playerRadius / 2);
+            ctx.lineTo(move.x * utils.widthTile + utils.playerRadius / 2,
+                move.y * utils.heightTile + utils.playerRadius / 2);
+            ctx.moveTo(move.x * utils.widthTile + utils.playerRadius / 2,
+                move.y * utils.heightTile - utils.playerRadius / 2);
+            ctx.lineTo(move.x * utils.widthTile - utils.playerRadius / 2,
+                move.y * utils.heightTile + utils.playerRadius / 2);
+            ctx.stroke();
+            ctx.moveTo(move.x * utils.widthTile,
+                move.y * utils.heightTile);
+        }
     }
 }
 
 export function renderSpawners(ctx) {
-    ctx.fillStyle = '#FF0000'; // Couleur pour le spawner
+    ctx.fillStyle = spawnerColor; // Couleur pour le spawner
     for (const spawner of utils.spawners) {
         ctx.beginPath();
         ctx.arc(spawner.x * utils.widthTile, spawner.y * utils.heightTile,
