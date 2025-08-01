@@ -3,11 +3,13 @@ import { utils } from './utils.js';
 import Player from './player.js';
 import * as canvas from './canvas.js';
 
-let numberPlayers = 1;
+// Take the number of players from the URL parameters
+let numberPlayers = parseInt(new URLSearchParams(window.location.search).get('players')) || 2;
 let players = [];
 let turn = 0;
+let manche = 0;
 
-readAssetFileAndCreateTerrain('assets/trackTemplate2.txt').then(() => {
+readAssetFileAndCreateTerrain('assets/defaultTrack.txt').then(() => {
     canvas.updateResolution();
     renderCurrentGame();
 })
@@ -42,11 +44,18 @@ constants.touchCanvas.addEventListener('click', (event) => {
     if (!players[turn].move(x, y)) {
         return;
     }
+    if (turn === 0) {
+        manche++;
+    }
     turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
 
     while (!players[turn].canPlay() && !hasEveryoneFinished()) {
         turn = (turn + 1) % numberPlayers; // Passer au joueur suivant
+        if (turn === 0) {
+            manche++;
+        }
     }
+    console.log(`Manche ${manche}, Joueur ${turn + 1}`);
     initiateTurn();
     // console.log(`Clicked on position: (${x}, ${y})`);
 });
