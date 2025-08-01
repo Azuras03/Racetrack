@@ -6,18 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
     <link rel="icon" type="image/x-icon" href="assets/icon.ico">
 
+    <script defer type="module" src="./src/title.js"></script>
     <link rel="stylesheet" href="./src/styles.css">
+    <link rel="stylesheet" href="./src/title.css">
     <title>Racetrack</title>
 </head>
 
 <body>
-
-    <div id="header">
-        Racetrack!
-    </div>
-
     <div id="main">
-        <a href="./creator.html">Creator</a>
-        <a href="./game.html">Game</a>
+        <div id="left">
+            <img id="raceback" src="./assets/RaceBack.png" alt="Racetrack Background">
+            <img id="title" src="./assets/RaceLogo.png">
+
+            <div id="selection">
+                <a href="./game.html?players=3">3 Joueurs</a>
+                <a href="./game.html?players=2">2 Joueurs</a>
+                <a href="./game.html?players=1">1 Joueur</a>
+                <a href="./creator.html">Level Editor</a>
+            </div>
+        </div>
+        <div id="right">
+            <div id="indications"></div>
+        </div>
     </div>
 </body>
