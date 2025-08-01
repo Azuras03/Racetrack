@@ -17,8 +17,7 @@ class Player {
     getMoves(terrain) {
         if (this.hasWin) return; // Si on a gagné, pas besoin de chercher de moves
         this.possibleMoves = [];
-        this.calculatePredictivePosition();
-
+        this.calculatePredictivePosition(terrain);
         for (let dx = -1; dx <= 1; dx++) {
             let newX = this.predictivePosition.x + dx;
 
@@ -169,7 +168,7 @@ class Player {
             y < 0 || y >= utils.num_tiles_y)
     }
 
-    calculatePredictivePosition() {
+    calculatePredictivePosition(terrain) {
         this.predictivePosition.x = this.position.x + this.speedX;
         this.predictivePosition.y = this.position.y + this.speedY;
     }
