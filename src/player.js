@@ -9,7 +9,7 @@ class Player {
         this.speedY = 0;
         this.predictivePosition = { x: x, y: y };
         this.possibleMoves = [];
-        this.moves = [{ x: x, y: y }]; // Initialize with the starting position
+        this.moves = [{ x: x, y: y, stop:0 }]; // Initialize with the starting position
         this.stun = 0; // Stun duration
         this.hasWin = false; // Flag to check if the player has won
     }
@@ -112,7 +112,9 @@ class Player {
         if (this.stun === 1) {
             // On fait un retour en arrière
             this.stun = 0;
-            this.moves.push(this.moves[this.moves.length - 2]); // On prend l'avant-dernière position qu'on met dans le tableau à nouveau
+            // Clone the last move to keep the position
+            let newMove = { x: this.moves[this.moves.length - 2].x, y: this.moves[this.moves.length - 2].y, stop: this.moves[this.moves.length - 2].stop };
+            this.moves.push(newMove); // On prend l'avant-dernière position qu'on met dans le tableau à nouveau
             this.position.x = this.moves[this.moves.length - 1].x;
             this.position.y = this.moves[this.moves.length - 1].y;
             this.speedX = 0; // Reset speed
@@ -144,7 +146,8 @@ class Player {
 
             this.position.x = x;
             this.position.y = y;
-            this.moves.push({ x: x, y: y });
+            this.moves.push({ x: x, y: y, stop: move.stop });
+            console.log(this.moves);
             return true;
         } else {
             return false;

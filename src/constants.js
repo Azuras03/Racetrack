@@ -32,6 +32,7 @@ export {
     ctxGame,
     exportButton,
     importButton,
+    hideButton,
     mainContainer,
     pencilSizeSelector,
     pencil,
