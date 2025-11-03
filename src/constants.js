@@ -7,6 +7,7 @@ const gameCanvas = document.getElementById("gameCanvas");
 const ctxGame = gameCanvas.getContext("2d");
 const mainContainer = document.getElementById("main");
 const exportButton = document.getElementById("exportButton");
+const saveButton = document.getElementById("saveButton");
 const importButton = document.getElementById("importButton");
 
 const hideButton = document.getElementById("hideButton");
@@ -31,6 +32,7 @@ export {
     gameCanvas,
     ctxGame,
     exportButton,
+    saveButton,
     importButton,
     hideButton,
     mainContainer,

@@ -208,6 +208,21 @@ constants.exportButton.addEventListener('click', () => {
     console.log("Exported racetrack data to racetrack.txt");
 });
 
+constants.saveButton.addEventListener('click', () => {
+    let data = `${utils.num_tiles_x} ${utils.num_tiles_y} ${utils.trackDensity}\n<<\n`;
+    data = formatTerrainData(data);
+    if (localStorage.hasOwnProperty('levels')) {
+        localStorage.setItem('levels', JSON.stringify([]));
+    }
+    let levels = localStorage.getItem('levels');
+    let levelsArray = [];
+    if (levels) {
+        levelsArray = JSON.parse(levels);
+    }
+    levelsArray.push(data);
+    localStorage.setItem('levels', JSON.stringify(levelsArray));
+})
+
 function formatTerrainData(data) {
     // Terrain part
     for (let i = 0; i < utils.num_tiles_x * utils.trackDensity; i++) {
